@@ -1,0 +1,15 @@
+
+*** Error ***              
+Could not detect any camera
+*** Error (-105: 'Unknown model') ***       
+
+For debugging messages, please use the --debug option.
+Debugging messages may help finding a solution to your problem.
+If you intend to send any error or debug messages to the gphoto
+developer mailing list <gphoto-devel@lists.sourceforge.net>, please run
+gphoto2 as follows:
+
+    env LANG=C gphoto2 --debug --debug-logfile=my-logfile.txt --set-config eosremoterelease=Immediate --wait-event=1s --set-config eosremoterelease=0 --wait-event=2s
+
+Please make sure there is sufficient quoting around the arguments.
+

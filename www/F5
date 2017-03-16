@@ -1,0 +1,4 @@
+#!/bin/sh
+echo CFWGOTO:4 > /tmp/gtkImager
+sleep 11
+

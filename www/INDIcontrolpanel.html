@@ -1,0 +1,79 @@
+<html>
+ <head>
+ 
+    <meta http-equiv="Content-Type" content="text/html">
+    <title>INDI Control Panel</title>
+    <script language="javascript" type="text/javascript" src="jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="jquery.flot.js"></script>
+ </head>
+    <body bgcolor="#000000" TEXT="#FF0000" LINK="#FF0000" VLINK="#FF0000">
+
+
+<script id="source" language="javascript" type="text/javascript">
+
+
+
+	var xmlhttp3;
+
+	function GetXmlHttpObject() {
+		if(window.XMLHttpRequest) {
+			// code for IE7+, Firefox, Chrome, Opera, Safari
+			return new XMLHttpRequest();
+		}
+		
+		if(window.ActiveXObject) {
+			// code for IE6, IE5
+			return new ActiveXObject("Microsoft.XMLHTTP");
+		}	
+		return null;
+	}
+
+	
+	function kill_pyindiws() {
+	
+		
+		
+		
+		xmlhttp3 = GetXmlHttpObject();
+
+		var url3 = "kill_pyindiws.php";
+		
+		xmlhttp3.onreadystatechange = handleResponse3;
+		xmlhttp3.open("GET",url3,true);
+		xmlhttp3.send(null);
+		
+	}
+	
+
+
+	function handleResponse3() {
+		if(xmlhttp3.readyState == 4) {
+			var temptext = xmlhttp3.responseText;
+			setTimeout(function(){parent.document.getElementById('mainframe').src="http://10.0.0.1:8888";},10000); 
+		}
+	}
+	
+	
+	
+
+$(function () {
+
+	kill_pyindiws();
+	
+	
+});
+
+
+
+
+</script>
+
+
+
+
+ <iframe style='border: 0; position:fixed; top:0; left:0; right:0; bottom:0; width:100%; height:100%' id="mainframe" src="blank.html"></iframe> 
+
+
+
+ </body>
+</html>

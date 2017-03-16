@@ -1,0 +1,8 @@
+interface=eth0
+driver=nl80211
+channel=7
+hw_mode=g
+macaddr_acl=0
+ignore_broadcast_ssid=0
+auth_algs=1
+wep_default_key=0

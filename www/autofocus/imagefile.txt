@@ -1,0 +1,4 @@
+<select name="imagefile" id="imagefile" style="background-color:#000000; color:#FF0000">
+<option value="11310.jpg"><option value="%s.jpg">%s</option>
+</option>
+</select>

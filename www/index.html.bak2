@@ -1,0 +1,1335 @@
+<html>
+ <head>
+ 
+    <meta http-equiv="Content-Type" content="text/html">
+    <title>iAstroHub</title>
+    <script language="javascript" type="text/javascript" src="jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="jquery.flot.js"></script>
+
+ </head>
+    <body onload=setdatetime() bgcolor="#000000" TEXT="#FF0000" LINK="#FF0000" VLINK="#FF0000">
+
+    <div id="placeholder1" style="width:500px;height:120px"></div>
+    <div id="placeholder2" style="width:500px;height:120px"></div>
+
+
+<script id="source" language="javascript" type="text/javascript">
+
+
+var data = [];
+var ymax = 0;
+var options = {
+        series: {
+            lines: { show: true },
+            points: { show: false },
+	        color: "#FF0000"
+        },
+        xaxis: {
+            ticks: [0, 10, 20, 30, 40, 50, 60],
+            min: 0,
+            max: 60
+        },
+        yaxis: {
+//            ticks: 5,
+//            min: -2,
+//            max: 2
+        },
+	    grid: {
+			color: "#FF0000",
+			tickColor: "#4A4344"
+        }
+}; 
+
+var placeholder1 = $("#placeholder1");
+var placeholder2 = $("#placeholder2");
+
+var data1=[];
+var data2=[];
+var dat1=new Array(60);
+var dat2=new Array(60);
+var str =new Array(20);
+var txt="";
+var ind=0;
+var flg_read=0;
+var flg_guiding=0;
+var flg_calibrating=0;
+var flg_solving=0;
+var flg_focus=0;
+var flg_filter=0;
+
+var flg_ccd=0;
+var flg_read_ccd=0;
+
+var Xgain;
+var Ygain;
+
+var xmlhttp;
+var xmlhttp2;
+var xmlhttp3;
+var xmlhttp4;
+
+var st="";
+var st2="";
+var st_tmp="";
+var st2_tmp="";
+
+	function GetXmlHttpObject() {
+		if(window.XMLHttpRequest) {
+			// code for IE7+, Firefox, Chrome, Opera, Safari
+			return new XMLHttpRequest();
+		}
+		
+		if(window.ActiveXObject) {
+			// code for IE6, IE5
+			return new ActiveXObject("Microsoft.XMLHTTP");
+		}	
+		return null;
+	}
+
+	
+	function setdatetime() {
+	
+		var d = new Date();
+
+		var year=d.getUTCFullYear();
+		var month=d.getUTCMonth();
+		month+=1;
+		var day=d.getUTCDate();
+
+		var hour = d.getUTCHours();
+		var min = d.getUTCMinutes();
+		var sec = d.getUTCSeconds();
+
+		var ymd = year + "/" + month + "/" + day;
+		var hms = hour + ":" + min + ":" + sec;
+			
+		xmlhttp3 = GetXmlHttpObject();
+
+		var url3 = "setdatetime.php?date=" + ymd + "&time=" + hms;
+		
+		//xmlhttp3.onreadystatechange = handleResponse3;
+		xmlhttp3.open("GET",url3,true);
+		xmlhttp3.send(null);
+		
+	}
+	
+	function getStatus() {
+			
+		xmlhttp3 = GetXmlHttpObject();
+
+		var url3 = "ccd_getStatus.php";
+		
+		xmlhttp3.onreadystatechange = handleResponse3;
+		xmlhttp3.open("GET",url3,true);
+		xmlhttp3.send(null);
+		
+	}	
+	
+	function guiding() {
+
+		if(flg_guiding == 0 && flg_calibrating == 0) {
+
+			xmlhttp = GetXmlHttpObject();
+
+			var url = "autoguide.php";
+			flg_guiding=1;
+			flg_calibrating=0;
+				
+			xmlhttp.onreadystatechange = handleResponse;
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send(null);
+			
+			document.getElementById('statusbar').value = "Autoguiding started.";
+
+			monitor();
+
+		} else {
+		
+			document.getElementById('statusbar').value = "Autoguider is busy.";
+			
+		}
+
+	}
+
+	function calibrating() {
+	
+		var r=confirm("Calibration will start. Stay on this page to monitor the progress.")
+		if (r==true)
+		{
+
+		if(flg_guiding == 0 && flg_calibrating == 0) {
+
+			xmlhttp = GetXmlHttpObject();
+
+			var url = "calibrate.php";
+			flg_guiding=0;
+			flg_calibrating=1;
+				
+			xmlhttp.onreadystatechange = handleResponse;
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send(null);
+			
+			document.getElementById('statusbar').value = "Calibration started.";
+
+			monitor_cal();
+
+		} else {
+		
+			document.getElementById('statusbar').value = "Autoguider is busy.";
+			
+		}
+		
+		}
+
+	}
+
+	function stop() {
+		xmlhttp = GetXmlHttpObject();
+
+		var url = "stop.php";
+		flg_guiding=0;
+		flg_calibrating=0;
+				
+		xmlhttp.onreadystatechange = handleResponse;
+		xmlhttp.open("GET",url,true);
+		xmlhttp.send(null);
+		
+		document.getElementById('statusbar').value = "Autoguider & System Status";
+	}
+
+	function ReadGuiding() {
+		xmlhttp = GetXmlHttpObject();
+
+		var url = "read_autoguide.php";
+		flg_read=1;
+				
+		xmlhttp.onreadystatechange = handleResponse;
+		xmlhttp.open("GET",url,true);
+		xmlhttp.send(null);
+	}
+
+	function ReadCalibrating() {
+		xmlhttp = GetXmlHttpObject();
+
+		var url = "read_calibrate.php";
+		flg_read=2;
+				
+		xmlhttp.onreadystatechange = handleResponse;
+		xmlhttp.open("GET",url,true);
+		xmlhttp.send(null);
+	}
+
+
+	function getGain() {
+
+		if(flg_guiding == 0 && flg_calibrating == 0) {
+
+			xmlhttp = GetXmlHttpObject();
+
+			var url = "getGain.php";
+			flg_read=3;
+				
+			xmlhttp.onreadystatechange = handleResponse;
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send(null);
+
+		} else {
+		
+			document.getElementById('statusbar').value = "Autoguider is busy.";
+			
+		}
+
+	}
+
+	function setGain(x,y) {
+	
+	if (is_int(x) && is_int(y) && x>=0 && y>=0) {
+
+		if(flg_guiding == 0 && flg_calibrating == 0) {
+
+			xmlhttp = GetXmlHttpObject();
+
+			var url = "setGain.php?x=" + x + "&y=" + y;
+				
+			xmlhttp.onreadystatechange = handleResponse;
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send(null);
+			
+			document.getElementById('statusbar').value = "Gains were set to " + x + " for RA and " + y + " for DEC.";
+			//alert("Gains were set to " + x + " for RA and " + y + " for DEC.");
+
+		} else {
+		
+			document.getElementById('statusbar').value = "Autoguider is busy.";
+			
+		}
+		
+	} else {
+	
+		alert("Gains must be integers >= 0.");
+
+	}
+
+	}
+	
+	function setExp(exp) {
+
+		if(flg_guiding == 0 && flg_calibrating == 0) {
+	
+		if(exp != "10") {
+
+			xmlhttp = GetXmlHttpObject();
+
+			var url = "setExp.php?exp=" + exp;
+			
+			xmlhttp.onreadystatechange = handleResponse;
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send(null);
+			
+			document.getElementById('statusbar').value = "Exposure time was set.";
+
+		}
+		
+		} else {
+		
+			document.getElementById('statusbar').value = "Autoguider is busy.";
+			
+		}
+
+	}
+
+	function auto() {
+
+		if(flg_guiding == 0 && flg_calibrating == 0) {
+	
+			xmlhttp = GetXmlHttpObject();
+
+			var url = "auto.php";
+				
+			xmlhttp.onreadystatechange = handleResponse;
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send(null);
+			
+			document.getElementById('statusbar').value = "A guide star is automatically selected.";
+			
+		} else {
+		
+			document.getElementById('statusbar').value = "Autoguider is busy.";
+			
+		}
+
+	}
+	
+
+	function slot(filter) {
+		
+		if ((filter == "1") || (filter == "2") || (filter == "3") || (filter == "4") || (filter == "5")) {
+		
+		if(flg_ccd == 0 && flg_filter == 0) {
+
+			xmlhttp2 = GetXmlHttpObject();
+
+			var url2 = "slot.php?filter=" + filter;
+			flg_filter = 1;
+
+			xmlhttp2.onreadystatechange = handleResponse2;
+			xmlhttp2.open("GET",url2,true);
+			xmlhttp2.send(null);
+			
+			document.getElementById('msg_ccd').innerHTML = "Goto Filter #" + filter;
+
+		} else {
+		
+			document.getElementById('msg_ccd').innerHTML = "Camera is busy.";
+			
+		}
+
+		}
+	
+	}
+
+	
+	function ccd(filter,ld,exposure,nframe,filename) {
+	
+	if (isNumber(exposure) && is_int(nframe) && exposure>=0.1 && exposure<=1800 && nframe>=1 && filename.length>=1) {
+
+		if(flg_ccd == 0) {
+
+			xmlhttp2 = GetXmlHttpObject();
+
+			var url2 = "ccd.php?filter=" + filter + "&ld=" + ld + "&ex=" + exposure + "&nf=" + nframe + "&filename=" + filename;
+			flg_ccd=1;
+			flg_read_ccd=0;
+
+			xmlhttp2.onreadystatechange = handleResponse2;
+			xmlhttp2.open("GET",url2,true);
+			xmlhttp2.send(null);
+			
+			document.getElementById('msg_ccd').innerHTML = "Imaging sequence started";
+
+			monitor_ccd();
+
+		} else {
+		
+			document.getElementById('msg_ccd').innerHTML = "Camera is busy.";
+			
+		}
+		
+	} else {
+	
+		alert("Exposure must be in the range of 0.1-1800 sec and No. of frames must be an integer >= 1. And check the filename.");
+
+	}
+
+	}
+
+	function stop_ccd() {
+	
+	if(flg_ccd == 1) {
+
+		xmlhttp2 = GetXmlHttpObject();
+
+		var url2 = "stop_ccd.php";
+				
+		xmlhttp2.onreadystatechange = handleResponse2;
+		xmlhttp2.open("GET",url2,true);
+		xmlhttp2.send(null);
+		
+		document.getElementById('msg_ccd').innerHTML = "Imaging sequence stopped";
+		
+		// document.getElementById("cameraStop").disabled = true;
+
+		
+	}
+
+	}
+
+	function ReadCCD() {
+		xmlhttp2 = GetXmlHttpObject();
+
+		var url2 = "read_ccd.php";
+				
+		xmlhttp2.onreadystatechange = handleResponse2;
+		xmlhttp2.open("GET",url2,true);
+		xmlhttp2.send(null);
+	}
+
+
+	function getTEMP() {
+
+		if(flg_ccd == 0) {
+
+			xmlhttp2 = GetXmlHttpObject();
+
+			var url2 = "getTEMP.php";
+			flg_read_ccd=1;
+				
+			xmlhttp2.onreadystatechange = handleResponse2;
+			xmlhttp2.open("GET",url2,true);
+			xmlhttp2.send(null);
+			
+		} else {
+		
+			document.getElementById('msg_ccd').innerHTML = "Camera is busy.";
+			
+		}
+
+	}
+	
+	
+	
+	function setTEC(tec) {
+	
+	if (isNumber(tec)) {
+
+		if(flg_ccd == 0) {
+
+			xmlhttp2 = GetXmlHttpObject();
+
+			var url2 = "setTEC.php?tec=" + tec;
+			flg_read_ccd=0;
+				
+			xmlhttp2.onreadystatechange = handleResponse2;
+			xmlhttp2.open("GET",url2,true);
+			xmlhttp2.send(null);
+			
+			document.getElementById('msg_ccd').innerHTML = "Target temperature is set.";
+
+		} else {
+		
+			document.getElementById('msg_ccd').innerHTML = "Camera is busy.";
+			
+		}
+		
+	} else {
+	
+		alert("Target temperature must be a number in degrees Celsius.");
+
+	}
+
+	}
+	
+	function viewAlert() {
+
+		xmlhttp5 = GetXmlHttpObject();
+
+		var url5 = "viewAlert.php";
+				
+		xmlhttp5.onreadystatechange = handleResponse5;
+		xmlhttp5.open("GET",url5,true);
+		xmlhttp5.send(null);
+
+	}
+	
+	
+	function getTH() {
+
+		xmlhttp4 = GetXmlHttpObject();
+
+		var url4 = "getTH.php";
+				
+		xmlhttp4.onreadystatechange = handleResponse4;
+		xmlhttp4.open("GET",url4,true);
+		xmlhttp4.send(null);
+
+	}
+
+	function setTH(TH) {
+	
+	if ( isNumber(TH) && TH>0 ) {
+
+		xmlhttp4 = GetXmlHttpObject();
+
+		var url4 = "setTH.php?TH=" + TH;
+				
+		xmlhttp4.onreadystatechange = handleResponse4;
+		xmlhttp4.open("GET",url4,true);
+		xmlhttp4.send(null);
+			
+		document.getElementById('statusbar').value = "Alert threshold was set to " + TH + ".";
+
+	} else {
+	
+		alert("Alert threshold must be a number larger than zero.");
+
+	}
+
+	}
+	
+	
+
+	function AM_start(downsample) {
+	
+		var r=confirm("Plate-solving will start. Stay on this page to monitor the progress.")
+		if (r==true)
+		{
+
+		if(flg_solving == 0 && flg_calibrating == 0) {
+
+			xmlhttp3 = GetXmlHttpObject();
+
+			var url3 = "AM_start.php?downsample=" + downsample;
+			flg_solving=1;
+				
+			xmlhttp3.onreadystatechange = handleResponse3;
+			xmlhttp3.open("GET",url3,true);
+			xmlhttp3.send(null);
+			
+			document.getElementById('statusbar').value = "Plate-solving started.";
+
+		} else {
+		
+			document.getElementById('statusbar').value = "Busy...";
+			
+		}
+		
+		}
+
+	}
+
+	function AM_stop() {
+		xmlhttp3 = GetXmlHttpObject();
+
+		var url3 = "AM_stop.php";
+		flg_solving=0;
+				
+		xmlhttp3.onreadystatechange = handleResponse3;
+		xmlhttp3.open("GET",url3,true);
+		xmlhttp3.send(null);
+		
+		document.getElementById('statusbar').value = "Plate-solving stopped.";
+	}
+	
+	function AM_read() {
+		xmlhttp3 = GetXmlHttpObject();
+
+		var url3 = "AM_read.php";
+				
+		xmlhttp3.onreadystatechange = handleResponse3;
+		xmlhttp3.open("GET",url3,true);
+		xmlhttp3.send(null);
+	}
+	
+	function AM_align() {
+	
+		var r=confirm("Do you want to align the mount?")
+		if (r==true)
+		{
+
+			xmlhttp3 = GetXmlHttpObject();
+
+			var url3 = "AM_align.php";
+				
+			//xmlhttp3.onreadystatechange = handleResponse3;
+			xmlhttp3.open("GET",url3,true);
+			xmlhttp3.send(null);
+		
+			document.getElementById('statusbar').value = "Mount was aligned.";
+	
+		}
+		
+	}
+	
+	
+	function move_in(move) {
+	
+	if (is_int(move) && move>=1) {
+
+		if(flg_ccd == 0) {
+		
+			if((flg_focus == 0) && (document.getElementById('current_pos').value != "Moving...")) {
+
+				xmlhttp6 = GetXmlHttpObject();
+
+				var url6 = "move_in.php?move=" + move;
+				flg_focus=1;
+
+				xmlhttp6.onreadystatechange = handleResponse6;
+				xmlhttp6.open("GET",url6,true);
+				xmlhttp6.send(null);
+			
+				document.getElementById('current_pos').value = "Moving...";
+			
+			} else {
+			
+				alert("Focuser is moving.");
+			
+			}
+
+		} else {
+		
+			alert("Imaging in progress...");
+			
+		}
+		
+	} else {
+	
+		alert("The value must be an integer >= 1.");
+
+	}
+
+	}
+	
+	
+	function move_out(move) {
+	
+	if (is_int(move) && move>=1) {
+
+		if(flg_ccd == 0) {
+		
+			if((flg_focus == 0) && (document.getElementById('current_pos').value != "Moving...")) {
+
+				xmlhttp6 = GetXmlHttpObject();
+
+				var url6 = "move_out.php?move=" + move;
+				flg_focus=1;
+
+				xmlhttp6.onreadystatechange = handleResponse6;
+				xmlhttp6.open("GET",url6,true);
+				xmlhttp6.send(null);
+			
+				document.getElementById('current_pos').value = "Moving...";
+			
+			} else {
+			
+				alert("Focuser is moving.");
+			
+			}
+
+		} else {
+		
+			alert("Imaging in progress...");
+			
+		}
+		
+	} else {
+	
+		alert("The value must be an integer >= 1.");
+
+	}
+
+	}	
+	
+	
+	function move_to(to_pos) {
+	
+	if (is_int(to_pos) && to_pos>=0 && to_pos<=65535) {
+
+		if(flg_ccd == 0) {
+		
+			if((flg_focus == 0) && (document.getElementById('current_pos').value != "Moving...")) {
+		
+				xmlhttp6 = GetXmlHttpObject();
+
+				var url6 = "move_to.php?to_pos=" + to_pos;
+				flg_focus=1;
+
+				xmlhttp6.onreadystatechange = handleResponse6;
+				xmlhttp6.open("GET",url6,true);
+				xmlhttp6.send(null);
+			
+				document.getElementById('current_pos').value = "Moving...";
+				
+			} else {
+			
+				alert("Focuser is moving.");
+			
+			}
+
+		} else {
+		
+			alert("Imaging in progress...");
+			
+		}
+		
+	} else {
+	
+		alert("The value must be an integer in the range of 0 to 65535.");
+
+	}
+
+	}	
+	
+	
+	function focus_update() {
+	
+				xmlhttp6 = GetXmlHttpObject();
+
+				var url6 = "focus_update.php";
+
+				xmlhttp6.onreadystatechange = handleResponse6;
+				xmlhttp6.open("GET",url6,true);
+				xmlhttp6.send(null);
+			
+	}
+	
+	
+	function focus_stop() {
+	
+				xmlhttp6 = GetXmlHttpObject();
+
+				var url6 = "focus_stop.php";
+				flg_focus=0;
+
+				xmlhttp6.onreadystatechange = handleResponse6;
+				xmlhttp6.open("GET",url6,true);
+				xmlhttp6.send(null);
+			
+				document.getElementById('current_pos').value = "Stopped.";
+				
+	}	
+	
+	
+	function focus_read() {
+	
+				xmlhttp6 = GetXmlHttpObject();
+
+				var url6 = "focus_read.php";
+
+				xmlhttp6.onreadystatechange = handleResponse6;
+				xmlhttp6.open("GET",url6,true);
+				xmlhttp6.send(null);
+			
+	}
+	
+	
+	function focus_info() {
+	
+		if(flg_focus == 0) {
+	
+			xmlhttp5 = GetXmlHttpObject();
+
+			var url5 = "focus_info.php";
+				
+			xmlhttp5.onreadystatechange = handleResponse5;
+			xmlhttp5.open("GET",url5,true);
+			xmlhttp5.send(null);
+			
+		} else {
+			
+			alert("Focuser is moving.");
+			
+		}
+
+	}
+	
+	
+	function ff_open() {
+		xmlhttp7 = GetXmlHttpObject();
+
+		var url7 = "ff_open.php";
+				
+		xmlhttp7.onreadystatechange = handleResponse7;
+		xmlhttp7.open("GET",url7,true);
+		xmlhttp7.send(null);
+	}	
+	
+	function ff_close() {
+		xmlhttp7 = GetXmlHttpObject();
+
+		var url7 = "ff_close.php";
+				
+		xmlhttp7.onreadystatechange = handleResponse7;
+		xmlhttp7.open("GET",url7,true);
+		xmlhttp7.send(null);
+	}	
+	
+	
+	function ff_set(brightness) {
+	
+	if (is_int(brightness) && brightness>=0 && brightness<=100) {
+	
+		brightness=Math.round(brightness*2.55);
+	
+		xmlhttp7 = GetXmlHttpObject();
+
+		var url7 = "ff_set.php?brightness=" + brightness;
+				
+		xmlhttp7.onreadystatechange = handleResponse7;
+		xmlhttp7.open("GET",url7,true);
+		xmlhttp7.send(null);
+		
+	} else {
+	
+		alert("Brightness level must be an integer (0-100).");
+
+	}
+		
+	}
+	
+	
+	function ff_on() {
+		xmlhttp7 = GetXmlHttpObject();
+
+		var url7 = "ff_on.php";
+				
+		xmlhttp7.onreadystatechange = handleResponse7;
+		xmlhttp7.open("GET",url7,true);
+		xmlhttp7.send(null);
+	}	
+	
+	function ff_off() {
+		xmlhttp7 = GetXmlHttpObject();
+
+		var url7 = "ff_off.php";
+				
+		xmlhttp7.onreadystatechange = handleResponse7;
+		xmlhttp7.open("GET",url7,true);
+		xmlhttp7.send(null);
+	}	
+	
+	
+	
+
+	function handleResponse() {
+		if(xmlhttp.readyState == 4) {
+			st = xmlhttp.responseText;
+			
+			if (flg_read == 1) {   // autoguiding
+				st_temp=st.substr(0,5);
+				if (st_temp=="GGGGG"){
+					flg_read=0;
+					stop();
+					document.getElementById('statusbar').value = "Autoguider & System Status";
+				}
+				else {
+					flg_read=0;
+					st_tmp=st.substr(4,60);
+					document.getElementById('statusbar').value = st_tmp;
+					txt=st;
+				}
+			}
+			
+			if (flg_read == 2) {  // calibrating
+				
+				flg_read=0;
+				st_tmp=st.substr(st.length-7,3);
+				if (st_tmp == "+++"){
+					document.getElementById('returned_msg').innerHTML = st;
+					stop();
+					//alert("Calibration stopped");
+				}
+				else {
+					document.getElementById('returned_msg').innerHTML = st;
+				}
+			}
+			
+			if (flg_read == 3) {   // Guiding proportional gain
+				txt=st;
+				str = txt.split ( " " );
+				Xgain=str[0]*1;
+				Ygain=str[1]*1;
+				document.getElementById('xg').value = Xgain; 
+				document.getElementById('yg').value = Ygain; 
+				flg_read=0;
+			}
+			
+		}
+	}
+
+	function handleResponse2() {
+		if(xmlhttp2.readyState == 4) {
+			st2 = xmlhttp2.responseText;
+			
+			if (flg_read_ccd == 0) {
+				st2_tmp=st2.substr(0,5);
+				if (st2_tmp=="*****"){
+					flg_ccd=0;
+					st2_tmp="";
+					document.getElementById('msg_ccd').innerHTML = "CCD Status";
+					// document.getElementById("cameraStop").disabled = false;
+				}
+				else {
+					document.getElementById('msg_ccd').innerHTML = st2;
+				}
+			}
+				
+			if (flg_read_ccd == 1) {
+				document.getElementById('returned_msg').innerHTML = st2; 
+				flg_read_ccd = 0;
+			}
+			
+			if (flg_filter == 1) {
+				flg_filter = 0;
+			}
+				
+		}
+	}
+
+	function handleResponse3() {
+		if(xmlhttp3.readyState == 4) {
+			var temptext = xmlhttp3.responseText;
+			
+			if (flg_solving == 1) {  // solving field
+				
+				var temptext_tmp=temptext.substr(temptext.length-8,5);
+				if (temptext_tmp == "_____"){
+					document.getElementById('returned_msg').innerHTML = temptext;
+					flg_solving=0;
+					document.getElementById('statusbar').value = "Plate-solving completed.";
+				} else {
+					document.getElementById('returned_msg').innerHTML = temptext;
+					setTimeout(AM_read(), 1000);
+				}
+				
+			} else {
+			
+				document.getElementById('returned_msg').innerHTML = temptext;
+				
+			}
+		}
+	}
+	
+	function handleResponse4() {
+		if(xmlhttp4.readyState == 4) {
+			var temptext4 = xmlhttp4.responseText;
+			document.getElementById('TH').value = temptext4; 
+		}
+	}
+
+	function handleResponse5() {
+		if(xmlhttp5.readyState == 4) {
+			var temptext5 = xmlhttp5.responseText;
+			document.getElementById('returned_msg').innerHTML = temptext5;
+		}
+	}
+	
+	
+	function handleResponse6() {
+		if(xmlhttp6.readyState == 4) {
+			var temptext6 = xmlhttp6.responseText;
+			
+			if (flg_focus == 1) {  // focusing
+				var temptext6_tmp=temptext6.substr(temptext6.length-8,5);
+				if (temptext6_tmp == "SSSSS"){
+					flg_focus=0;
+					focus_update();
+				} else {
+					document.getElementById('current_pos').value = "Moving...";
+					setTimeout(focus_read(), 1000);
+				}
+			} else {
+				document.getElementById('current_pos').value = temptext6;
+			}
+			
+		}
+	}
+	
+	function handleResponse7() {
+		if(xmlhttp7.readyState == 4) {
+			var temptext7 = xmlhttp7.responseText;
+		}
+	}	
+	
+	
+
+$(function () {
+
+	refresh();
+	
+	monitor();
+	monitor_ccd();
+
+});
+
+function refresh() {
+	ind=0;
+	data1=[]
+	data2=[]
+	$.plot(placeholder1, [data1], options);
+	$.plot(placeholder2, [data2], options);
+
+}
+
+function plot() {
+    $.plot(placeholder1, [data1], options);
+    $.plot(placeholder2, [data2], options);
+}
+
+function IsNumeric(input)
+{
+   return  (input-input) == 0;
+}
+
+function isNumber(n) {
+
+  return !isNaN(parseFloat(n)) && isFinite(n);
+  
+}
+
+
+function is_int(value){
+  if((parseFloat(value) == parseInt(value)) && !isNaN(value)){
+      return true;
+  } else {
+      return false;
+  }
+}
+
+
+
+function gen_data(){
+    
+
+	ReadGuiding();
+	str_tmp = txt.substr(15,30);
+	str = str_tmp.split ( " " );
+	dat1[ind]=str[0]*1;
+	dat2[ind]=str[1]*1;
+
+	if (IsNumeric(dat1[ind]) && IsNumeric(dat2[ind])) {
+        	data1[ind] = [ind,dat1[ind]];
+        	data2[ind] = [ind,dat2[ind]];
+		++ind;
+		if (ind > 60){
+			ind=0;
+                	data1 = [];
+			data2 = [];
+		}
+	}
+
+}
+
+
+function monitor() {
+
+	st="";
+ 	st_tmp="";
+	flg_guiding=1;
+
+		refresh();
+
+        setTimeout(fetchData1, 1000);
+
+        function fetchData1() {
+	    gen_data();
+	    plot();
+            if (flg_guiding == 1)
+                setTimeout(fetchData1, 1000);
+        }
+
+}
+
+function monitor_cal() {
+
+	st="";
+	st_tmp="";
+
+        setTimeout(fetchData2, 1000);
+
+        function fetchData2() {
+	    ReadCalibrating();
+            if (flg_calibrating == 1)
+                setTimeout(fetchData2, 1000);
+        }
+
+}
+
+
+
+function monitor_ccd() {
+
+	st2="";
+	st2_tmp="";
+	flg_ccd=1;
+
+        setTimeout(fetchData3, 1000);
+
+        function fetchData3() {
+			ReadCCD();
+            if (flg_ccd == 1)
+                setTimeout(fetchData3, 1000);
+        }
+
+}
+
+
+
+
+
+
+function y_minus() {
+
+	ymax = ymax-1;
+	if (ymax < 1)
+		ymax = 1;
+		
+	options = {
+			series: {
+				lines: { show: true },
+				points: { show: false },
+				color: "#FF0000"
+			},
+			xaxis: {
+				ticks: [0, 10, 20, 30, 40, 50, 60],
+				min: 0,
+				max: 60
+			},
+			yaxis: {
+				ticks: 5,
+				min: (-1*ymax),
+				max: (ymax)
+			},
+			grid: {
+				color: "#FF0000",
+				tickColor: "#4A4344"
+			}
+	}; 
+	
+}
+
+
+function y_plus() {
+
+	ymax = ymax+1;
+		
+	options = {
+			series: {
+				lines: { show: true },
+				points: { show: false },
+				color: "#FF0000"
+			},
+			xaxis: {
+				ticks: [0, 10, 20, 30, 40, 50, 60],
+				min: 0,
+				max: 60
+			},
+			yaxis: {
+				ticks: 5,
+				min: (-1*ymax),
+				max: (ymax)
+			},
+			grid: {
+				color: "#FF0000",
+				tickColor: "#4A4344"
+			}
+	}; 
+	
+}
+
+
+
+</script>
+
+<hr color="#4A4344">
+
+<input type="text" size="35" value="" name="statusbar" id="statusbar" readonly="readonly"  style="background-color:#302217; color:#F6CECE"/>
+&nbsp;&nbsp;
+<span id="msg_ccd" style="background-color:#000000; color:#F6CECE"></span>
+
+<p>
+
+<b><u>Autoguider Control</u></b>
+&nbsp;&nbsp;&nbsp;
+Graph:
+<input type="button" value="Clear" onClick="javascript: refresh();" style="background-color:#000000; color:#FF0000">
+<input type="button" value="Y-" onClick="javascript: y_minus();" style="background-color:#000000; color:#FF0000">
+<input type="button" value="Y+" onClick="javascript: y_plus();" style="background-color:#000000; color:#FF0000">
+&nbsp;&nbsp;&nbsp;
+<select name="autoguiderExp" id="autoguiderExp" onChange="javascript: setExp(document.getElementById('autoguiderExp').value);" style="background-color:#000000; color:#FF0000">
+  <option value="10" >Set Exposure Time (s)</option>
+  <option value="2" >1 s</option>
+  <option value="1" >2 s</option>
+  <option value="0" >4 s</option>
+</select>
+
+<p>
+Alert Threshold:
+<input type="button" value="Get" onClick="javascript: getTH();" style="background-color:#000000; color:#FF0000">
+<input type="text" size="5" value="" name="TH" id="TH" style="background-color:#302217; color:#FF0000"/>
+<input type="button" value="Set" onClick="javascript: setTH(document.getElementById('TH').value);" style="background-color:#000000; color:#FF0000">
+<input type="button" value="View Alert" onClick="javascript: viewAlert();" style="background-color:#000000; color:#FF0000">
+
+<p>
+RA & DEC Gains:
+<input type="button" value="Get" onClick="javascript: getGain();" style="background-color:#000000; color:#FF0000">
+<input type="text" size="5" value="" name="xg" id="xg" style="background-color:#302217; color:#FF0000"/>
+<input type="text" size="5" value="" name="yg" id="yg" style="background-color:#302217; color:#FF0000"/>
+<input type="button" value="Set" onClick="javascript: setGain(document.getElementById('xg').value,document.getElementById('yg').value);" style="background-color:#000000; color:#FF0000">
+
+<p>
+Star Finder:
+<input type="button" value="Auto" onClick="javascript: auto();" style="background-color:#000000; color:#FF0000">
+<input type="button" value="Manual" onclick="window.open('guidestar/guidestar.html')"; " style="background-color:#000000; color:#FF0000">
+
+<p>
+Commands:
+<input type="button" value="Calibrate" onClick="javascript: calibrating();" style="background-color:#000000; color:#FF0000">
+<input type="button" value="Guide" onClick="javascript: guiding();" style="background-color:#000000; color:#FF0000">
+<input type="button" value="Stop" onClick="javascript: stop();" style="background-color:#000000; color:#FF0000">
+
+<hr color="#4A4344">
+
+<b><u>CCD Camera Control</u></b>
+&nbsp;&nbsp;&nbsp;
+<input type="button" value="Status" onClick="javascript: getStatus();" style="background-color:#000000; color:#FF0000">
+<input type="button" value="View Images" onclick="window.open('guidestar/CCDimageviewer.php');" style="background-color:#000000; color:#FF0000">
+
+
+<p>
+Target Temp (&deg;C): 
+<input type="text" size="5" name="tec" id="tec" style="background-color:#302217; color:#FF0000"/>
+<input type="button" value="Set" onClick="javascript: setTEC(document.getElementById('tec').value);" style="background-color:#000000; color:#FF0000">
+
+&nbsp;&nbsp;&nbsp;
+<input type="button" value="Current Temp (&deg;C)" onClick="javascript: getTEMP();" style="background-color:#000000; color:#FF0000">
+
+<p>
+<!--
+[Filter#, Exposure (s), No. of Frames]<br>
+<select name="filter" id="filter" style="background-color:#000000; color:#FF0000">
+  <option value="0" >--</option>
+  <option value="1" >1</option>
+  <option value="2" >2</option>
+  <option value="3" >3</option>
+  <option value="4" >4</option>
+  <option value="5" >5</option>
+  <option value="13" >1-3</option>
+  <option value="23" >2-3</option>
+  <option value="14" >1-4</option>
+  <option value="24" >2-4</option>
+  <option value="34" >3-4</option>
+</select>
+<input type="button" value="Go" onClick="javascript: slot(document.getElementById('filter').value);" style="background-color:#000000; color:#FF0000">
+-->
+
+<select name="ld_frame" id="ld_frame" style="background-color:#000000; color:#FF0000">
+  <option value="0" >Light</option>
+  <option value="1" >Dark</option>
+</select>
+Exp(s)
+<input type="text" size="5" value="" name="exposure" id="exposure" style="background-color:#302217; color:#FF0000"/>
+#Frames
+<input type="text" size="5" value="" name="nframe" id="nframe" style="background-color:#302217; color:#FF0000"/>
+Filename
+<input type="text" size="10" value="" name="filename" id="filename" style="background-color:#302217; color:#FF0000"/>
+&nbsp;&nbsp;&nbsp;
+<input type="button" value="Start" onClick="javascript: ccd(0,document.getElementById('ld_frame').value,document.getElementById('exposure').value,document.getElementById('nframe').value,document.getElementById('filename').value);" style="background-color:#000000; color:#FF0000">
+<input type="button" value="Stop" id="cameraStop" onClick="javascript: stop_ccd();" style="background-color:#000000; color:#FF0000">
+
+<hr color="#4A4344">
+
+<b><u>Tools</u></b>
+<input type="button" value="Drift Method Guide" onClick="document.getElementById('returned_msg').innerHTML = 'Meridian   : Drift N ---> Move E \nE/W Horizon: Drift N ---> Move Down/Up';"  style="background-color:#000000; color:#FF0000">
+&nbsp;&nbsp;&nbsp;
+<input type="button" value="Skychart" onclick="window.open('skychart/skychart.html')"; " style="background-color:#000000; color:#FF0000">
+&nbsp;&nbsp;&nbsp;
+<input type="button" value="Admin" onclick="window.open('manage.php')"; " style="background-color:#FF0000; color:#000000">
+
+<p>
+Plate-Solving:
+<select name="downsample" id="downsample" style="background-color:#000000; color:#FF0000">
+  <option value="2">Downsample 2x</option>
+  <option value="4">Downsample 4x</option>
+  <option value="8">Downsample 8x</option>
+</select>
+<input type="button" value="Start" onClick="javascript: AM_start(document.getElementById('downsample').value);" style="background-color:#000000; color:#FF0000">
+<input type="button" value="Stop" onClick="javascript: AM_stop();" style="background-color:#000000; color:#FF0000">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="button" value="Sync" onClick="javascript: AM_align();" style="background-color:#000000; color:#FF0000">
+<img src="img/download.gif" >
+<a href="SkySafari.skyset">SkySafari</a>
+
+<p>
+Focuser:
+<input type="button" value="Focuser Info" onClick="javascript: focus_info();" style="background-color:#000000; color:#FF0000">
+<input type="button" value="Focuser Control" onclick="window.open('autofocus/autofocus.php');" style="background-color:#000000; color:#FF0000">
+
+<!--
+<b><u>Focuser Control</u></b>
+&nbsp;&nbsp;&nbsp;
+<input type="button" value="Position" onClick="javascript: focus_update();" style="background-color:#000000; color:#FF0000">
+<input type="text" size="7" value="" name="current_pos" id="current_pos" readonly="readonly" style="background-color:#302217; color:#F6CECE"/>
+<input type="button" value="Get Focus Info" onClick="javascript: focus_info();" style="background-color:#000000; color:#FF0000">
+&nbsp;&nbsp;&nbsp;
+<input type="button" value="Autofocus" onclick="window.open('autofocus/autofocus.php');" style="background-color:#000000; color:#FF0000">
+<p>
+<input type="button" value="Move In" onClick="javascript: move_in(document.getElementById('move').value);" style="background-color:#000000; color:#FF0000">
+<input type="text" size="5" value="" name="move" id="move" style="background-color:#302217; color:#FF0000"/>
+<input type="button" value="Move Out" onClick="javascript: move_out(document.getElementById('move').value);" style="background-color:#000000; color:#FF0000">
+&nbsp;&nbsp;&nbsp;
+<input type="button" value="Move To" onClick="javascript: move_to(document.getElementById('to_pos').value);" style="background-color:#000000; color:#FF0000">
+<input type="text" size="5" value="" name="to_pos" id="to_pos" style="background-color:#302217; color:#FF0000"/>
+&nbsp;&nbsp;&nbsp;
+<input type="button" value="Stop" onClick="javascript: focus_stop();" style="background-color:#000000; color:#FF0000">
+-->
+
+<p>
+Flip-Flat:
+<input type="button" value="Open" onClick="javascript: ff_open();" style="background-color:#000000; color:#FF0000">
+<input type="button" value="Close" onClick="javascript: ff_close();" style="background-color:#000000; color:#FF0000">
+Level
+<input type="text" size="5" value="" placeholder="0-100" name="brightness" id="brightness" style="background-color:#302217; color:#FF0000"/>
+<input type="button" value="Set" onClick="javascript: ff_set(document.getElementById('brightness').value);" style="background-color:#000000; color:#FF0000">
+Light
+<input type="button" value="On" onClick="javascript: ff_on();" style="background-color:#000000; color:#F6CECE">
+<input type="button" value="Off" onClick="javascript: ff_off();" style="background-color:#000000; color:#FF0000">
+
+<hr color="#4A4344">
+
+<pre STYLE="font-size: large">
+<span id="returned_msg"></span>
+</pre>
+
+ </body>
+</html>

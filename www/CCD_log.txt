@@ -1,0 +1,46 @@
+Xlib:  extension "RANDR" missing on display ":2".
+Detected 4 cpu cores
+Fifo: Opening /tmp/gtkImager
+Fifo: /tmp/gtkImager active
+SBIG driver Version 4.84
+GTK M: 2, m: 24, u: 25
+Fifo: PREVIEW=New preview image available	2016-09-27 13:18:02
+Fifo: LOADFILE=ACK
+Fifo: MINADU=0
+Fifo: PREVIEW=New preview image available	2016-09-27 13:18:03
+Fifo: MAXADU=65535
+Fifo: PREVIEW=New preview image available	2016-09-27 13:18:04
+Fifo: GETPREVIEW=ACK
+Fifo: MINADU=0
+Fifo: PREVIEW=New preview image available	2016-09-27 13:18:35
+Fifo: MAXADU=987
+Fifo: PREVIEW=New preview image available	2016-09-27 13:18:36
+Fifo: GETPREVIEW=ACK
+Fifo: PREVIEW=New preview image available	2016-09-27 13:19:51
+Fifo: LOADFILE=ACK
+Fifo: MINADU=0
+Fifo: PREVIEW=New preview image available	2016-09-27 13:19:53
+Fifo: MAXADU=987
+Fifo: PREVIEW=New preview image available	2016-09-27 13:19:54
+Fifo: GETPREVIEW=ACK
+Fifo: PREVIEW=New preview image available	2016-09-27 13:25:45
+Fifo: LOADFILE=ACK
+Fifo: MINADU=0
+Fifo: PREVIEW=New preview image available	2016-09-27 13:25:47
+Fifo: MAXADU=987
+Fifo: PREVIEW=New preview image available	2016-09-27 13:25:48
+Fifo: GETPREVIEW=ACK
+Fifo: PREVIEW=New preview image available	2016-09-27 13:26:49
+Fifo: LOADFILE=ACK
+Fifo: MINADU=0
+Fifo: PREVIEW=New preview image available	2016-09-27 13:26:50
+Fifo: MAXADU=987
+Fifo: PREVIEW=New preview image available	2016-09-27 13:26:51
+Fifo: GETPREVIEW=ACK
+Fifo: PREVIEW=New preview image available	2016-09-27 13:28:39
+Fifo: LOADFILE=ACK
+Fifo: MINADU=0
+Fifo: PREVIEW=New preview image available	2016-09-27 13:28:40
+Fifo: MAXADU=987
+Fifo: PREVIEW=New preview image available	2016-09-27 13:28:41
+Fifo: GETPREVIEW=ACK

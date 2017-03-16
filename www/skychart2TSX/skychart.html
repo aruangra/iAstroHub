@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Skychart (Cartes du Ciel)</title>
+        <script type="text/javascript" src="jquery.js" ></script>
+        <script type="text/javascript" src="jqueryui.js" ></script>
+        <script type="text/javascript" src="jquery.mousewheel.min.js" ></script>
+        <script type="text/javascript" src="jquery.iviewer2.js" ></script>
+    </head>
+	
+	
+	
+    <body>
+		<script id="source" language="javascript" type="text/javascript">
+
+	var xcoord=0;
+	var ycoord=0;
+	var flg_run=0;
+		
+	start_skychart();
+
+	function GetXmlHttpObject() {
+		if(window.XMLHttpRequest) {
+			// code for IE7+, Firefox, Chrome, Opera, Safari
+			return new XMLHttpRequest();
+		}
+		
+		if(window.ActiveXObject) {
+			// code for IE6, IE5
+			return new ActiveXObject("Microsoft.XMLHTTP");
+		}	
+		return null;
+	}
+	
+	function start_skychart() {
+	
+		var d = new Date();
+
+		var year=d.getUTCFullYear();
+		var month=d.getUTCMonth();
+		month+=1;
+		var day=d.getUTCDate();
+
+		var hour = d.getUTCHours();
+		var min = d.getUTCMinutes();
+		var sec = d.getUTCSeconds();
+
+		var ymd = year + "/" + month + "/" + day;
+		var hms = hour + ":" + min + ":" + sec;
+			
+		xmlhttp = GetXmlHttpObject();
+
+		var url = "start_skychart.php?date=" + ymd + "&time=" + hms;
+		flg_run = 1;
+		
+		xmlhttp.onreadystatechange = handleResponse;
+		xmlhttp.open("GET",url,true);
+		xmlhttp.send(null);
+		
+	}
+	
+	function sendcmd(cmd) {
+	
+		if(flg_run == 0) {
+
+			xmlhttp = GetXmlHttpObject();
+
+			var url = "sendcmd.php?cmd=" + cmd;
+			flg_run = 1;
+				
+			xmlhttp.onreadystatechange = handleResponse;
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send(null);
+			
+			document.getElementById('status').innerHTML = "&nbsp; Processing...";
+
+		} else {
+		
+			document.getElementById('status').innerHTML = "&nbsp; Previous job is being processed...";
+			
+		}		
+			
+	}
+	
+	function center() {
+	
+	if (xcoord>0 && xcoord < $("#viewer1").iviewer('info','orig_width',true) && ycoord>0 && ycoord < $("#viewer1").iviewer('info','orig_height',true) ) {
+	
+		if(flg_run == 0) {
+
+			xmlhttp = GetXmlHttpObject();
+
+			var url = "center.php?x=" + xcoord + "&y=" + ycoord;
+			flg_run = 1;
+				
+			xmlhttp.onreadystatechange = handleResponse;
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send(null);
+			
+			document.getElementById('status').innerHTML = "&nbsp; Processing...";
+
+		} else {
+		
+			document.getElementById('status').innerHTML = "&nbsp; Previous job is being processed...";
+			
+		}	
+
+	} else {
+	
+		alert("Locate a new center on the chart.");
+
+	}
+
+	}
+	
+	
+	function chart_show(RA,DEC) {
+	
+	if (isNumber(RA) && isNumber(DEC)) {
+
+		if(flg_run == 0) {
+
+			xmlhttp = GetXmlHttpObject();
+
+			var url = "chart_show.php?RA=" + RA + "&DEC=" + DEC;
+			flg_run = 1;
+				
+			xmlhttp.onreadystatechange = handleResponse;
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send(null);
+			
+			document.getElementById('status').innerHTML = "&nbsp; Processing...";
+
+		} else {
+		
+			document.getElementById('status').innerHTML = "&nbsp; Previous job is being processed...";
+			
+		}	
+	
+	} else {
+	
+		alert("Input RA and DEC in decimal numbers");
+
+	}
+
+	}
+	
+		
+	function search(object) {
+	
+	if (object.length > 1) {
+	
+		if(flg_run == 0) {
+
+			xmlhttp = GetXmlHttpObject();
+
+			var url = "search.php?object=" + object;
+			flg_run = 1;
+				
+			xmlhttp.onreadystatechange = handleResponse;
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send(null);
+			
+			document.getElementById('status').innerHTML = "&nbsp; Processing...";
+			
+		} else {
+		
+			document.getElementById('status').innerHTML = "&nbsp; Previous job is being processed...";
+			
+		}	
+		
+	} else {
+	
+		alert("Input the object name.");
+
+	}
+
+	}
+	
+	function home() {
+	
+		var r=confirm("Home the Mount?")
+		if (r==true)
+		{
+	
+			xmlhttp = GetXmlHttpObject();
+
+			var url = "home.php";
+				
+			xmlhttp.onreadystatechange = handleResponse;
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send(null);
+			
+		}
+
+	}		
+	
+	function sync() {
+	
+		var r=confirm("Sync to Object at Chart Center?")
+		if (r==true)
+		{
+	
+			xmlhttp = GetXmlHttpObject();
+
+			var url = "sync.php";
+				
+			xmlhttp.onreadystatechange = handleResponse;
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send(null);
+			
+		}
+
+	}		
+	
+	function slew() {
+	
+		var r=confirm("Goto Object at Chart Center?")
+		if (r==true)
+		{
+
+			xmlhttp = GetXmlHttpObject();
+
+			var url = "slew.php";
+				
+			xmlhttp.onreadystatechange = handleResponse;
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send(null);
+			
+		}
+
+	}		
+	
+	function abort() {
+
+			xmlhttp = GetXmlHttpObject();
+
+			var url = "abort.php";
+				
+			xmlhttp.onreadystatechange = handleResponse;
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send(null);
+
+	}	
+	
+	function getRADEC() {
+
+			xmlhttp2 = GetXmlHttpObject();
+
+			var url2 = "getRADEC.php";
+				
+			xmlhttp2.onreadystatechange = handleResponse2;
+			xmlhttp2.open("GET",url2,true);
+			xmlhttp2.send(null);
+
+	}	
+	
+	function show() {
+	
+		if(flg_run == 0) {
+
+			xmlhttp = GetXmlHttpObject();
+
+			var url = "show.php";
+			flg_run = 1;
+				
+			xmlhttp.onreadystatechange = handleResponse;
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send(null);
+			
+			document.getElementById('status').innerHTML = "&nbsp; Processing...";
+
+		} else {
+		
+			document.getElementById('status').innerHTML = "&nbsp; Previous job is being processed...";
+			
+		}		
+
+	}		
+	
+	function update() {
+
+		$("#viewer1").iviewer('loadImage','skychart.png?'+ (new Date()).getTime() );
+		document.getElementById('status').innerHTML = "&nbsp; Ready";
+		flg_run = 0;
+	    xcoord=0;
+	    ycoord=0;
+	
+	}	
+	
+	function handleResponse() {
+		if(xmlhttp.readyState == 4) {
+			st = xmlhttp.responseText;
+			// document.getElementById('status').innerHTML = st;
+			
+			st_tmp=st.substr(st.length-4,3);
+			if (st_tmp == "***"){
+				update();
+			}
+
+		}
+	}
+	
+	function handleResponse2() {
+		if(xmlhttp2.readyState == 4) {
+			st2 = xmlhttp2.responseText;
+			document.getElementById('status').innerHTML = st2;
+		}
+	}
+	
+	function isNumber(n) {
+
+	  return !isNaN(parseFloat(n)) && isFinite(n);
+	  
+	}	
+
+		jQuery(function($){
+		
+                var viewer;
+        
+                viewer = $("#viewer1").iviewer({
+                   // src: "skychart.png",
+				   
+                    onStopDrag: function(ev, coords) {
+						 $('#status').html('Coordinate: ('+coords.x.toFixed(0)+', '+coords.y.toFixed(0)+').');
+						 xcoord=coords.x.toFixed(0)*1;
+						 ycoord=coords.y.toFixed(0)*1;
+						 this.container.css('cursor', null);
+                    },
+				   
+                    initCallback: function(ev) {
+                        this.container.context.iviewer = this;
+                    }
+                });
+		});
+
+        </script>
+		
+        <link rel="stylesheet" href="jquery.iviewer.css" />
+        <style>
+            html, body {
+                height: 100%;
+                padding: 0;
+                margin: 0;
+				background-color: black;
+				color: red;
+            }
+        
+            .viewer
+            {
+                height: 100%;
+                position: relative;
+                background-color: black;
+            }
+            
+            .wrapper
+            {
+                border: 1px solid red;
+
+                position: absolute;
+                top: 5em;
+                left: 1em;
+                bottom: 1em;
+                right: 1em;
+
+                overflow: hidden; /*for opera*/
+            }
+            
+            .toolbar
+            {
+                border: 1px solid red;
+
+                position: absolute;
+                top: 1em;
+                left: 1em;
+                right: 1em;
+                height: 3em;
+            }
+        </style>
+
+
+        <div class="toolbar">
+
+
+<select name="cmd" id="cmd" style="background-color:#000000; color:#FF0000">
+  <option value="0">Refresh Chart</option>
+  <option value="1">Zoom In</option>
+  <option value="2">Zoom Out</option>
+  <option value="3">FOV 1 deg</option>
+  <option value="4">FOV 5 deg</option>
+  <option value="5">FOV 20 deg</option>
+  <option value="6">Move E</option>
+  <option value="7">Move W</option>
+  <option value="8">Move N</option>
+  <option value="9">Move S</option>
+  <option value="12" style="background-color:#000000; color:#F6CECE">Show Solved CCD Frame</option>
+  <option value="13" style="background-color:#000000; color:#F6CECE">Show CCD Frame</option>
+  <option value="14">Hide CCD Frame</option>
+  <option value="10" style="background-color:#000000; color:#F6CECE">Show Plate-Solved Image</option>
+  <option value="11">Hide Plate-Solved Image</option>
+  <option value="15" style="background-color:#000000; color:#F6CECE">Show Catalog Image</option>
+  <option value="16">Hide Catalog Image</option>
+</select>
+
+<input type="button" value="Run" onClick="javascript: sendcmd(document.getElementById('cmd').value);" style="background-color:#000000; color:#FF0000">
+
+<input type="button" value="Center" onClick="javascript: center();" style="background-color:#000000; color:#FF0000">
+
+<input type="text" size="7" value="" placeholder="RA" name="chart_RA" id="chart_RA" style="background-color:#302217; color:#FF0000"/>
+<input type="text" size="7" value="" placeholder="DEC" name="chart_DEC" id="chart_DEC" style="background-color:#302217; color:#FF0000"/>
+<input type="button" value="Show" onClick="javascript: chart_show(document.getElementById('chart_RA').value, document.getElementById('chart_DEC').value);" style="background-color:#000000; color:#FF0000">
+
+<input type="text" size="7" value="" name="object" id="object" style="background-color:#302217; color:#FF0000"/>
+<input type="button" value="Search" onClick="javascript: search(document.getElementById('object').value);" style="background-color:#000000; color:#FF0000">
+
+Mount: 
+<input type="button" value="Home" onClick="javascript: home();" style="background-color:#000000; color:#FF0000">
+&nbsp;&nbsp;&nbsp;
+<input type="button" value="Sync" onClick="javascript: sync();" style="background-color:#000000; color:#FF0000">
+&nbsp;&nbsp;&nbsp;
+<input type="button" value="Goto" onClick="javascript: slew();" style="background-color:#000000; color:#FF0000">
+<input type="button" value="Abort" onClick="javascript: abort();" style="background-color:#000000; color:#FF0000">
+&nbsp;&nbsp;&nbsp;
+<input type="button" value="RA,DEC" onClick="javascript: getRADEC();" style="background-color:#000000; color:#FF0000">
+<input type="button" value="Show" onClick="javascript: show();" style="background-color:#000000; color:#FF0000">
+
+<span id="status"></span>
+
+        </div>
+            
+        <div class="wrapper">
+            <div id="viewer1" class="viewer"></div>
+        </div>
+            
+    </body>
+	
+	
+</html>

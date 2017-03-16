@@ -1,0 +1,53 @@
+Reading input file 1 of 1: "/home/pi/www/image.jpg"...
+Extracting sources...
+Downsampling by 8...
+simplexy: found 267 sources.
+Solving...
+Reading file "/home/pi/www/image.axy"...
+Field 1 did not solve (index index-4210.fits, field objects 1-10).
+Field 1 did not solve (index index-4209.fits, field objects 1-10).
+Field 1 did not solve (index index-4208.fits, field objects 1-10).
+Field 1 did not solve (index index-4207-11.fits, field objects 1-10).
+Field 1 did not solve (index index-4207-10.fits, field objects 1-10).
+Field 1 did not solve (index index-4207-09.fits, field objects 1-10).
+Field 1 did not solve (index index-4207-08.fits, field objects 1-10).
+Field 1 did not solve (index index-4207-07.fits, field objects 1-10).
+Field 1 did not solve (index index-4207-06.fits, field objects 1-10).
+Field 1 did not solve (index index-4207-05.fits, field objects 1-10).
+Field 1 did not solve (index index-4207-04.fits, field objects 1-10).
+Field 1 did not solve (index index-4207-03.fits, field objects 1-10).
+Field 1 did not solve (index index-4207-02.fits, field objects 1-10).
+Field 1 did not solve (index index-4207-01.fits, field objects 1-10).
+Field 1 did not solve (index index-4207-00.fits, field objects 1-10).
+Field 1 did not solve (index index-4210.fits, field objects 11-20).
+Field 1 did not solve (index index-4209.fits, field objects 11-20).
+Field 1 did not solve (index index-4208.fits, field objects 11-20).
+Field 1 did not solve (index index-4207-11.fits, field objects 11-20).
+Field 1 did not solve (index index-4207-10.fits, field objects 11-20).
+Field 1 did not solve (index index-4207-09.fits, field objects 11-20).
+Field 1 did not solve (index index-4207-08.fits, field objects 11-20).
+Field 1 did not solve (index index-4207-07.fits, field objects 11-20).
+Field 1 did not solve (index index-4207-06.fits, field objects 11-20).
+Field 1 did not solve (index index-4207-05.fits, field objects 11-20).
+Field 1 did not solve (index index-4207-04.fits, field objects 11-20).
+Field 1 did not solve (index index-4207-03.fits, field objects 11-20).
+Field 1 did not solve (index index-4207-02.fits, field objects 11-20).
+Field 1 did not solve (index index-4207-01.fits, field objects 11-20).
+Field 1 did not solve (index index-4207-00.fits, field objects 11-20).
+Field 1 did not solve (index index-4210.fits, field objects 21-30).
+  log-odds ratio 373.614 (1.81333e+162), 53 match, 0 conflict, 140 distractors, 72 index.
+  RA,Dec = (85.2651,-2.37933), pixel scale 2.47029 arcsec/pix.
+  Hit/miss:   Hit/miss: ++++-++++--+-+++--++-++++-+-++++--++++--+-+--+-+++---+++-+-----+-+-----+---+---+----------+---++----
+Field 1: solved with index index-4209.fits.
+Field 1 solved: writing to file /home/pi/www/image.solved to indicate this.
+Field: /home/pi/www/image.jpg
+Field center: (RA,Dec) = (85.26, -2.379) deg.
+Field center: (RA H:M:S, Dec D:M:S) = (05:41:03.538, -02:22:43.348).
+Field size: 2.30171 x 1.73823 degrees
+Field rotation angle: up is -88.7501 degrees E of N
+Creating new FITS file "/home/pi/www/image.new"...
+
+Done in 23 sec
+Mount can be aligned now.
+Result is ready for SkySafari.
+____________________________________________________

@@ -1,0 +1,1 @@
+Fifo: CAPVIEW=New image available (/home/pi/www/tmp_images/test_---_0007)

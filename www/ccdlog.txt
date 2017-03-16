@@ -1,0 +1,2 @@
+ 
+ccamera_qhy8l::open_device(): Could not open the QHY8L device

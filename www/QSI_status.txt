@@ -1,0 +1,28 @@
+Cooling:               On
+Fan mode:              Auto
+Heatsink temperature:  +33.5C
+CCD temperature:       +10.0C
+Cooler power:           26.0%
+Filter position:       0
+Camera status:       Exposing 
+-------------------------------------------------------
+2016-02-24, 22:11:57 > Focuser stopped
+2016-02-24, 22:11:54 > Applying filter focus offset of -300 steps...
+2016-02-24, 22:11:53 > Setting filter wheel to "R" at position 0
+2016-02-24, 22:11:53 > Waiting for CCD to reach  10.0 +/- 0.1C; now at  10.0C
+2016-02-24, 22:11:53 > TASK Expose (1)
+2016-02-24, 22:11:53 > COMMAND btnCCDStart	
+2016-02-24, 22:11:51 > COMMAND cmbFilType R	
+2016-02-24, 22:11:50 > COMMAND txtCCDExposure 10	
+2016-02-24, 22:11:50 > COMMAND txtFileCCD test	
+2016-02-24, 22:11:49 > COMMAND cmbExpType TARGET	
+2016-02-24, 22:11:49 > COMMAND txtCCDChipTemp  10	
+2016-02-24, 22:11:46 > ****---->>>> Opened focuser link
+2016-02-24, 22:11:46 > Found Robofocus version 3.200
+2016-02-24, 22:11:45 > ****---->>>> Opening focuser comms link on /dev/ttyUSB0...
+2016-02-24, 22:11:45 > COMMAND open_focuser_comms 1	
+2016-02-24, 22:11:19 > ****---->>>> Communications with focuser closed
+2016-02-24, 22:11:19 > COMMAND open_focuser_comms 0	
+2016-02-24, 22:11:18 > Task execution FINISHED
+2016-02-24, 22:11:18 > CCD exposure cancelled!
+2016-02-24, 22:11:17 > COMMAND btnCCDCancel	

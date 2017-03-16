@@ -1,0 +1,106 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+# Print the IP address
+#_IP=$(hostname -I) || true
+#if [ "$_IP" ]; then
+#  printf "My IP address is %s\n" "$_IP"
+#fi
+
+sudo echo "0 " > /home/pi/www/hist_L.txt
+sudo echo "65535 " > /home/pi/www/hist_U.txt
+sudo echo " " > /home/pi/www/image.txt
+sudo echo " " > /home/pi/www/photo.txt
+
+file="/home/pi/www/status_app"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_app
+fi
+
+file="/home/pi/www/status_connect"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_connect
+fi
+
+file="/home/pi/www/status_skychart"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_skychart
+fi
+
+file="/home/pi/www/status_guiding"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_guiding
+fi
+
+file="/home/pi/www/status_capture"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_capture
+fi
+
+file="/home/pi/www/status_ccd"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_ccd
+fi
+
+file="/home/pi/www/status_focus"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_focus
+fi
+
+file="/home/pi/www/status_dslr"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_dslr
+fi
+
+file="/home/pi/www/status_loading"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_loading
+fi
+
+file="/home/pi/www/status_processing"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_processing
+fi
+
+file="/home/pi/www/prepare_ccd"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/prepare_ccd
+fi
+
+sudo /home/pi/www/./sound > /dev/null 2>&1 &
+
+sudo /home/pi/www/./monitor_camera > /dev/null 2>&1 &
+
+sudo /home/pi/www/./monitor_pty > /dev/null 2>&1 &
+
+perl /home/pi/www/event_monitor4.pl &
+
+Xvfb :1 -screen 0 800x600x16 -ac &
+Xvfb :2 -screen 0 800x600x16 -ac &
+Xvfb :3 -screen 0 960x720x16 -ac &
+
+# Setup Wifi AP mode
+sudo ifconfig wlan0 down
+sudo ifconfig wlan0 10.0.0.1 netmask 255.255.255.0 up
+sudo iwconfig wlan0 power off
+sudo service dnsmasq restart
+sudo hostapd -B /etc/hostapd/ap.conf & > /dev/null 2>&1
+
+# Pushover notification
+file1="/home/pi/www/notify_imaging"
+file2="/home/pi/www/notify_guiding"
+if [ -f "$file1" ] || [ -f "$file2" ]; then
+perl /home/pi/www/notify_IP.pl
+fi
+
+exit 0

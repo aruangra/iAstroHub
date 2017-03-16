@@ -1,0 +1,1431 @@
+1. install Raspbian (2016-05-27-raspbian-jessie-lite)
+
+Edit /boot/config.txt
+******** ADD ***********
+max_usb_current=1
+
+
+Log-in via SSH or console
+************************
+user: pi
+password: raspberry
+
+sudo passwd
+password: raspberry
+
+
+sudo nano /etc/ssh/sshd_config
+****************************************
+#PermitRootLogin without-password
+#StrictModes yes
+PermitRootLogin yes
+
+
+sudo raspi-config
+************************
+Expand filesystem and disable serial in advanced options, exit and reboot.
+
+
+
+2. Login as root
+
+sudo visudo
+
+*** add this in the bottom line ****
+ALL ALL=(ALL) NOPASSWD: ALL
+
+"Ctrl-x" to save and exit
+
+
+
+3. Update
+
+sudo apt-get update
+sudo apt-get upgrade
+
+
+
+4. Wifi AP mode
+
+sudo apt-get install dnsmasq hostapd
+
+sudo nano /etc/hostapd/ap.conf
+************ ADD ******************
+interface=wlan0
+hw_mode=g
+channel=10
+auth_algs=1
+wpa=2
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=CCMP
+rsn_pairwise=CCMP
+wpa_passphrase=1234512345123
+ssid=iAstroHub
+
+
+sudo nano /etc/dnsmasq.conf
+******* ADD *******
+interface=wlan0
+dhcp-range=10.0.0.2,10.0.0.5,255.255.255.0,12h
+
+
+sudo nano /etc/rc.local
+*******************************************************
+sudo ifconfig wlan0 down
+sudo ifconfig wlan0 10.0.0.1 netmask 255.255.255.0 up
+sudo iwconfig wlan0 power off
+sudo service dnsmasq restart
+sudo hostapd -B /etc/hostapd/ap.conf & > /dev/null 2>&1
+
+
+
+5. Install tools
+
+sudo apt-get install nano aptitude gcc g++ make usbutils bc wget build-essential bc
+
+
+
+6. CPU and Temp
+
+time echo "scale=2000; a(1)*4" | bc -l
+******************** RPi3 ****************
+real    0m7.877s
+user    0m7.870s
+sys     0m0.000s
+
+
+******************** RPi2 ****************
+real    0m15.194s
+user    0m15.180s
+sys     0m0.000s
+
+
+sudo apt-get install cpufrequtils
+
+********************************************************
+pi@raspberrypi:~ $ cpufreq-info
+cpufrequtils 008: cpufreq-info (C) Dominik Brodowski 2004-2009
+Report errors and bugs to cpufreq@vger.kernel.org, please.
+analyzing CPU 0:
+  driver: BCM2835 CPUFreq
+  CPUs which run at the same hardware frequency: 0 1 2 3
+  CPUs which need to have their frequency coordinated by software: 0 1 2 3
+  maximum transition latency: 355 us.
+  hardware limits: 600 MHz - 1.20 GHz
+  available frequency steps: 600 MHz, 1.20 GHz
+  available cpufreq governors: conservative, ondemand, userspace, powersave, performance
+  current policy: frequency should be within 600 MHz and 1.20 GHz.
+                  The governor "ondemand" may decide which speed to use
+                  within this range.
+  current CPU frequency is 1.20 GHz.
+  cpufreq stats: 600 MHz:53.18%, 1.20 GHz:46.82%  (10)
+analyzing CPU 1:
+  driver: BCM2835 CPUFreq
+  CPUs which run at the same hardware frequency: 0 1 2 3
+  CPUs which need to have their frequency coordinated by software: 0 1 2 3
+  maximum transition latency: 355 us.
+  hardware limits: 600 MHz - 1.20 GHz
+  available frequency steps: 600 MHz, 1.20 GHz
+  available cpufreq governors: conservative, ondemand, userspace, powersave, performance
+  current policy: frequency should be within 600 MHz and 1.20 GHz.
+                  The governor "ondemand" may decide which speed to use
+                  within this range.
+  current CPU frequency is 1.20 GHz.
+  cpufreq stats: 600 MHz:53.18%, 1.20 GHz:46.82%  (10)
+analyzing CPU 2:
+  driver: BCM2835 CPUFreq
+  CPUs which run at the same hardware frequency: 0 1 2 3
+  CPUs which need to have their frequency coordinated by software: 0 1 2 3
+  maximum transition latency: 355 us.
+  hardware limits: 600 MHz - 1.20 GHz
+  available frequency steps: 600 MHz, 1.20 GHz
+  available cpufreq governors: conservative, ondemand, userspace, powersave, performance
+  current policy: frequency should be within 600 MHz and 1.20 GHz.
+                  The governor "ondemand" may decide which speed to use
+                  within this range.
+  current CPU frequency is 1.20 GHz.
+  cpufreq stats: 600 MHz:53.18%, 1.20 GHz:46.82%  (10)
+analyzing CPU 3:
+  driver: BCM2835 CPUFreq
+  CPUs which run at the same hardware frequency: 0 1 2 3
+  CPUs which need to have their frequency coordinated by software: 0 1 2 3
+  maximum transition latency: 355 us.
+  hardware limits: 600 MHz - 1.20 GHz
+  available frequency steps: 600 MHz, 1.20 GHz
+  available cpufreq governors: conservative, ondemand, userspace, powersave, performance
+  current policy: frequency should be within 600 MHz and 1.20 GHz.
+                  The governor "ondemand" may decide which speed to use
+                  within this range.
+  current CPU frequency is 1.20 GHz.
+  cpufreq stats: 600 MHz:53.18%, 1.20 GHz:46.82%  (10)
+pi@raspberrypi:~ $ 
+********************************************************
+
+root@raspberrypi:/home/pi# vcgencmd measure_temp
+temp=47.2'C
+
+root@raspberrypi:/home/pi# cat /sys/class/thermal/thermal_zone0/temp
+47236
+
+
+
+7. Webserver
+
+*** Copy www source codes to /home/pi
+
+sudo chmod 777 /home/pi/www -R
+
+sudo apt-get install nginx php5-fpm php5-cgi php5-cli php5-common
+
+nano /etc/php5/cli/php.ini
+nano /etc/php5/cgi/php.ini
+nano /etc/php5/fpm/php.ini
+
+		; This directive determines whether or not PHP will recognize code between
+		; <? and ?> tags as PHP source which should be processed as such. It is
+		; generally recommended that <?php and ?> should be used and that this feature
+		; should be disabled, as enabling it may result in issues when generating XML
+		; documents, however this remains supported for backward compatibility reasons.
+		; Note that this directive does not control the <?= shorthand tag, which can be
+		; used regardless of this directive.
+		; Default Value: On
+		; Development Value: Off
+		; Production Value: Off
+		; http://php.net/short-open-tag
+		short_open_tag = On
+		
+sudo nano /etc/nginx/sites-enabled/default
+
+        root /home/pi/www;
+
+        # Add index.php to the list if you are using PHP
+        index index.html index.htm index.nginx-debian.html;
+		
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        location ~ \.php$ {
+                include snippets/fastcgi-php.conf;
+
+        #       # With php5-cgi alone:
+        #       fastcgi_pass 127.0.0.1:9000;
+                # With php5-fpm:
+                fastcgi_pass unix:/var/run/php5-fpm.sock;
+        }
+
+sudo nano /etc/php5/fpm/pool.d/www.conf
+
+		; The address on which to accept FastCGI requests.
+		; Valid syntaxes are:
+		;   'ip.add.re.ss:port'    - to listen on a TCP socket to a specific IPv4 address on
+		;                            a specific port;
+		;   '[ip:6:addr:ess]:port' - to listen on a TCP socket to a specific IPv6 address on
+		;                            a specific port;
+		;   'port'                 - to listen on a TCP socket to all IPv4 addresses on a
+		;                            specific port;
+		;   '[::]:port'            - to listen on a TCP socket to all addresses
+		;                            (IPv6 and IPv4-mapped) on a specific port;
+		;   '/path/to/unix/socket' - to listen on a unix socket.
+		; Note: This value is mandatory.
+		listen = /var/run/php5-fpm.sock
+		
+		
+sudo service php5-fpm restart
+sudo service nginx restart
+
+
+nano /home/pi/www/sysinfo/includes/mb/class.Coretemp.inc.php
+
+    private function _temperature()
+    {
+            if (CommonFunctions::executeProgram('cat', '/sys/class/thermal/thermal_zone0/temp', $temp)) {
+                $dev = new SensorDevice();
+                $dev->setName("CPU");
+                $dev->setValue($temp/1000);
+                $dev->setMax(" ");
+                $this->mbinfo->setMbTemp($dev);
+            }
+    }
+
+nano /home/pi/www/sysinfo/config.php
+
+	/**
+	 * Define the motherboard monitoring program (!!!names are case-sensitive!!!)
+	 * We support the following programs so far
+	 * - LMSensors  http://www.lm-sensors.org/
+	 * - Healthd    http://healthd.thehousleys.net/
+	 * - HWSensors  http://www.openbsd.org/
+	 * - MBMon      http://www.nt.phys.kyushu-u.ac.jp/shimizu/download/download.html
+	 * - MBM5       http://mbm.livewiredev.com/
+	 * - Coretemp
+	 * - IPMI       http://openipmi.sourceforge.net/
+	 * - K8Temp     http://hur.st/k8temp/
+	 * Example: If you want to use lmsensors : define('PSI_SENSOR_PROGRAM', 'LMSensors');
+	 */
+	define('PSI_SENSOR_PROGRAM', 'Coretemp');
+
+	
+
+8. xvfb and vnc
+
+sudo apt-get install xvfb x11vnc xfonts-cyrillic xfonts-75dpi xfonts-scalable
+
+
+
+9. TCP to Serial
+
+sudo apt-get install ser2net socat
+
+sudo nano /etc/ser2net.conf
+************************ ADD ***************************
+3300:raw:0:/dev/ttyUSB0:9600 NONE 1STOPBIT 8DATABITS
+3301:raw:0:/dev/ttyUSB0:19200 EVEN 1STOPBIT 8DATABITS
+
+sudo /etc/init.d/ser2net restart
+
+
+
+10. Pushover Notification
+
+apt-get install curl libwww-perl
+
+
+
+11. Hostname
+
+sudo nano /etc/hostname
+*********************************
+iAstroHub
+
+
+sudo nano /etc/hosts
+*****************************************************************
+127.0.0.1       localhost
+::1             localhost ip6-localhost ip6-loopback
+ff02::1         ip6-allnodes
+ff02::2         ip6-allrouters
+
+127.0.1.1       iAstroHub
+
+
+
+12. Skychart
+
+sudo apt-get install libgtk2.0-0 libpango1.0-0 xplanet
+
+
+12.1 Build from source codes
+
+sudo apt-get install fpc
+
+wget https://sourceforge.net/projects/lazarus/files/Lazarus%20Zip%20_%20GZip/Lazarus%201.6/lazarus-1.6.0-0.tar.gz
+sudo tar -zxvf lazarus-1.6.0-0.tar.gz
+cd lazarus
+sudo make
+
+sudo ./lazarus
+Click...Start IDE,  Ignore
+Menu>Package>Install/Uninstall Packages
+Install the components Printer4Lazarus and TurboPowerIPro
+Click...save and rebuild IDE 
+Click...Continue
+wait until the program is restarted. Then quit.
+
+wget https://sourceforge.net/projects/skychart/files/1-software/version_3.10/skychart-3.10-2854-src.tar.xz
+sudo tar -xvf skychart-3.10-2854-src.tar.xz
+
+cd /home/pi/skychart-3.10-2854-src/
+
+sudo mkdir /home/pi/skychart-3.10-2854-src/skychart/component/lib/arm-linux-gtk2
+sudo mkdir /home/pi/skychart-3.10-2854-src/skychart/units/arm-linux-gtk2
+sudo mkdir /home/pi/skychart-3.10-2854-src/varobs/units/arm-linux-gtk2
+
+nano skychart/component/jdcalendar/jdcalendar.pas
+****************LINE 148*******************************
+  procedure DoButtonClick(Sender: TObject);
+****************LINE 827********************************
+  inherited ButtonClick;
+********************************************************
+
+sudo ./configure fpc=/usr/lib/fpc/2.6.4 lazarus=/home/pi/lazarus prefix=/usr/local
+sudo make
+sudo make install
+
+sudo make install_data
+
+nano install_pict.sh
+************************************************************
+#!/bin/bash
+
+# install nebulae catalog data
+
+function InstPict {
+  pkg=pictures_sac_3.2.tar.xz
+  ddir=$2
+  pkgz=BaseData/pictures_sac_3.2.tar.xz
+  if [ ! -e $pkgz ]; then
+     wget https://sourceforge.net/projects/skychart/files/4-source_data/pictures_sac_3.2.tar.xz -O $pkgz
+  fi
+  tar -xJf $pkgz -C $ddir
+}
+
+destdir=$1
+
+if [ -z "$destdir" ]; then
+   export destdir=/tmp/skychart
+fi
+
+echo Install DSO pictures to $destdir
+
+install -m 755 -d $destdir
+install -m 755 -d $destdir/share
+install -m 755 -d $destdir/share/skychart
+
+InstPict pictures_sac $destdir/share/skychart
+************************************************************
+
+sudo make install_pict
+
+
+12.2 Install from binary (RECOMMENDED)
+
+chmod 777 /home/pi/skychart-3.10-2854-src -R
+cd /home/pi/skychart-3.10-2854-src
+sudo make install
+sudo ldconfig
+
+sudo make install_data
+
+nano install_pict.sh
+************************************************************
+#!/bin/bash
+
+# install nebulae catalog data
+
+function InstPict {
+  pkg=pictures_sac_3.2.tar.xz
+  ddir=$2
+  pkgz=BaseData/pictures_sac_3.2.tar.xz
+  if [ ! -e $pkgz ]; then
+     wget https://sourceforge.net/projects/skychart/files/4-source_data/pictures_sac_3.2.tar.xz -O $pkgz
+  fi
+  tar -xJf $pkgz -C $ddir
+}
+
+destdir=$1
+
+if [ -z "$destdir" ]; then
+   export destdir=/tmp/skychart
+fi
+
+echo Install DSO pictures to $destdir
+
+install -m 755 -d $destdir
+install -m 755 -d $destdir/share
+install -m 755 -d $destdir/share/skychart
+
+InstPict pictures_sac $destdir/share/skychart
+************************************************************
+
+sudo make install_pict
+
+
+12.3 Install from armhf binary on the website (TOO SLOW)
+
+mkdir skychart
+cd skychart
+
+wget http://sourceforge.net/projects/skychart/files/1-software/version_3.10/skychart_3.10-2854_armhf.deb
+dpkg -i skychart_3.10-2854_armhf.deb
+
+wget http://sourceforge.net/projects/skychart/files/2-catalogs/Nebulea/skychart-data-pictures_3.2_all.deb
+dpkg -i skychart-data-pictures_3.2_all.deb
+
+
+12.4 Setup
+
+skychart
+Setup > Observatory
+Setup > Chart, coordinate > check Equatorial, Apparent
+Setup > Catalog > Check XHIP
+Setup > Display > uncheck finders, show labels, show mark index
+Click "show pictures" icon to disable
+Exit and save setting
+
+
+
+13. Astrometry
+
+apt-get install gcc-4.4 g++-4.4
+rm /usr/bin/gcc
+rm /usr/bin/g++
+ln -s /usr/bin/gcc-4.4 /usr/bin/gcc
+ln -s /usr/bin/g++-4.4 /usr/bin/g++
+
+
+sudo apt-get install python-dev python-pip
+pip install pyephem
+
+sudo apt-get install python-pyfits
+python -c "import pyfits"
+
+sudo apt-get install libcairo2-dev libnetpbm10-dev netpbm libpng12-dev libjpeg-dev python-numpy zlib1g-dev
+
+cd /home/pi/
+sudo wget http://www.astrometry.net/downloads/astrometry.net-0.40.tar.bz2
+sudo tar xjf astrometry.net-0.40.tar.bz2
+
+**************** copy modified files
+solve-field.c to /home/pi/astrometry.net-0.40/blind/
+starutil.c to /home/pi/astrometry.net-0.40/util/
+****************
+
+cd /home/pi/astrometry.net-0.40
+
+sudo make
+sudo make install
+
+
+*********** install index files (4207 to 4210 for 0.5-2.0 deg FOV) to /usr/local/astrometry/data ********************
+
+cd /usr/local/astrometry/data/
+
+nano list.txt
+-------------------------------
+http://broiler.astrometry.net/~dstn/4200/index-4207-00.fits
+http://broiler.astrometry.net/~dstn/4200/index-4207-01.fits
+http://broiler.astrometry.net/~dstn/4200/index-4207-02.fits
+http://broiler.astrometry.net/~dstn/4200/index-4207-03.fits
+http://broiler.astrometry.net/~dstn/4200/index-4207-04.fits
+http://broiler.astrometry.net/~dstn/4200/index-4207-05.fits
+http://broiler.astrometry.net/~dstn/4200/index-4207-06.fits
+http://broiler.astrometry.net/~dstn/4200/index-4207-07.fits
+http://broiler.astrometry.net/~dstn/4200/index-4207-08.fits
+http://broiler.astrometry.net/~dstn/4200/index-4207-09.fits
+http://broiler.astrometry.net/~dstn/4200/index-4207-10.fits
+http://broiler.astrometry.net/~dstn/4200/index-4207-11.fits
+http://broiler.astrometry.net/~dstn/4200/index-4208.fits
+http://broiler.astrometry.net/~dstn/4200/index-4209.fits
+http://broiler.astrometry.net/~dstn/4200/index-4210.fits
+-------------------------------
+
+wget -i list.txt
+
+***********************************************************************************************
+
+rm /usr/bin/gcc
+rm /usr/bin/g++
+ln -s /usr/bin/gcc-4.9 /usr/bin/gcc
+ln -s /usr/bin/g++-4.9 /usr/bin/g++
+
+
+
+14. Dslrdashboard
+
+sudo apt-get install git build-essential pkg-config libusb-1.0-0-dev
+cd /home/pi/
+git clone git://github.com/hubaiz/DslrDashboardServer
+cd DslrDashboardServer/
+g++ -Wall src/main.cpp src/communicator.cpp `pkg-config --libs --cflags libusb-1.0` -lpthread -lrt -lstdc++ -o ddserver
+chmod +x ddserver
+cp ddserver /home/pi/www/.
+
+
+
+15. gphoto2
+
+cd /home/pi/
+wget https://raw.githubusercontent.com/gonzalo/gphoto2-updater/master/gphoto2-updater.sh
+chmod 777 gphoto2-updater.sh
+./gphoto2-updater.sh -s
+
+
+
+16. Pentax
+
+apt-get install ufraw ufraw-batch libgtk2.0-dev
+
+wget https://github.com/asalamon74/pktriggercord/releases/download/v0.84.00/pkTriggerCord-0.84.00.src.tar.gz
+tar xvf pkTriggerCord-0.84.00.src.tar.gz
+cd pktriggercord-0.84.00/
+sudo make
+sudo make install
+pktriggercord-cli -v
+
+
+
+17. FTDI modules
+
+mv /lib/modules/4.4.13-v7+/kernel/drivers/usb/serial/ftdi_sio.ko /home/pi/.
+sudo depmod -a
+
+
+
+18. Lin_guider
+
+Copy the following files to /home/pi/
+REFERENCE: 
+https://sourceforge.net/projects/linguider/
+https://sourceforge.net/projects/cccd/
+https://sourceforge.net/projects/libnexstar/
+******************************************
+lin_guider-3.3.0.tar.bz2
+libnexstar-0.15.tar.gz
+firmware-ccd_1.3_all.deb
+libasicamera-0.3.0623-armhf.deb
+atikccdsdk-1.1-v7-armhf.deb
+******************************************
+
+sudo apt-get install libusb-1.0-0-dev libqt4-dev libftdi-dev fxload
+
+cd /home/pi/
+sudo tar -xvf libnexstar-0.15.tar.gz
+cd libnexstar-0.15/
+./configure
+sudo make
+sudo make install
+
+cd /home/pi/
+sudo tar -xvf lin_guider-3.3.0.tar.bz2
+
+**************** copy modified files ****************
+lin_guider.cpp            	to /home/pi/lin_guider_pack/lin_guider/src/
+rcalibration.cpp          	to /home/pi/lin_guider_pack/lin_guider/src/
+server.cpp                	to /home/pi/lin_guider_pack/lin_guider/src/
+video_asi.cpp			   	to /home/pi/lin_guider_pack/lin_guider/src/video_dev/	
+video_atik.cpp    			to /home/pi/lin_guider_pack/lin_guider/src/video_dev/
+video_qhy5ii.cpp        	to /home/pi/lin_guider_pack/lin_guider/src/video_dev/
+video_qhy6.cpp    			to /home/pi/lin_guider_pack/lin_guider/src/video_dev/
+video_sx.cpp    			to /home/pi/lin_guider_pack/lin_guider/src/video_dev/
+guider.h                  	to /home/pi/lin_guider_pack/lin_guider/include/
+rcalibration.h             	to /home/pi/lin_guider_pack/lin_guider/include/
+server.h            		to /home/pi/lin_guider_pack/lin_guider/include/
+*******************************************************
+
+cd /home/pi/lin_guider_pack/lin_guider/
+./configure
+sudo make
+
+cd /home/pi/
+dpkg -i firmware-ccd_1.3_all.deb
+dpkg -i libasicamera-0.3.0623-armhf.deb
+dpkg -i atikccdsdk-1.1-v7-armhf.deb
+
+************* SETUP **********************
+cd /home/pi/lin_guider_pack/lin_guider/
+./lin_guider
+Setup > Video Settings > Device
+Setup > Video Settings > Expo
+Setup > Video Settings > Frame
+Setup > Pulse Device Settings > Device
+Setup > General Settings > Check "drift data"
+Setup > General Settings > Dithering timeout = 10 sec
+Processing > Calibration > Check "auto mode" and "two axis" (if guiding both axes)
+
+
+
+19. OpenSkyImager
+REFERENCE: https://github.com/OpenSkyProject/OpenSkyImager
+
+sudo apt-get install libgtk2.0-0 libgtk2.0-dev libglib2.0-0 libglib2.0-dev libcfitsio3-dev libudev-dev fxload cmake imagemagick
+
+cd /home/pi/
+git clone git://github.com/OpenSkyProject/OpenSkyImager
+cd /home/pi/OpenSkyImager/
+
+
+nano /home/pi/OpenSkyImager/gtk/imgPixbuf.c
+***************
+retval = (gdk_pixbuf_save(pixbuf, path, "jpeg", NULL, "quality", "85", NULL) == TRUE);
+***************
+
+
+nano /home/pi/OpenSkyImager/gtk/imgWFuncs.c
+***************
+void load_image_from_data()
+{
+	int retval = 0;
+	
+    char buff[100];                     									<---------------
+    time_t now = time (0);                    								<---------------
+	
+	g_rw_lock_reader_lock(&thd_caplock);
+	if (imgfit_loaded())
+	{
+		// Set hourglass
+		//gdk_window_set_cursor(GDK_WINDOW(window->window), watchCursor);
+		// Ui update after byterpix
+		if (tmrimgrefresh != -1)
+		{
+			g_source_remove(tmrimgrefresh);
+		}
+		if (tmrfrmrefresh != -1)
+		{
+			g_source_remove(tmrfrmrefresh);
+		}
+		set_adu_limits(imgfit_get_bytepix());
+		
+		int debayer = gtk_combo_box_get_active(GTK_COMBO_BOX(cmb_debayer));
+		if (imgfit_internal() == 0)
+		{
+			// No debayer for captured frames if bin > 1
+			debayer = (imgcam_get_shpar()->bin == 1) ? debayer : 0;
+		}
+		if (fwhmv == 1)
+		{
+			fwhm_calc();
+		}
+		
+		// Actual pixbuffer load (thread safe)
+		g_rw_lock_writer_lock(&pixbuf_lock);
+		retval = imgpix_load(imgfit_get_data(), imgfit_get_width(), imgfit_get_height(), imgfit_get_bytepix(), debayer, scrmaxadu, scrminadu);
+		g_rw_lock_writer_unlock(&pixbuf_lock);
+				
+		if ((fifomode) && (retval))
+		{
+			strftime (buff, 100, "%Y-%m-%d %H:%M:%S", localtime (&now));		                <---------------
+			printf("Fifo: PREVIEW=New preview image available\t%s\n",buff);					    <---------------
+		}
+
+		if (retval == 1)
+		{	
+			tmrfrmrefresh = g_timeout_add(1, (GSourceFunc) tmr_frm_refresh, NULL);
+		}
+		else if (strlen(imgpix_get_msg()) != 0)
+		{
+			tmrfrmrefresh = g_timeout_add(1, (GSourceFunc) tmr_imgstatus_pixmsg, NULL);			
+		}
+		// Reset
+		//gdk_window_set_cursor(GDK_WINDOW(window->window), NULL);
+	}
+	g_rw_lock_reader_unlock(&thd_caplock);
+}
+***************
+
+
+nano /home/pi/OpenSkyImager/sbig/install_sbig.bash
+**********************************************************************
+#if [[ $cpu == *arm* ]]
+#then
+        sudo cp $basedir/arm-32/libsbigudrv.so /usr/lib/
+#else
+#       sudo cp $basedir/x86-$bit/libsbigudrv.so /usr/lib/
+#fi
+**********************************************************************
+
+
+mkdir build
+cd build
+sudo cmake -D FORCE_GTK2=on  -D FORCE_QHY_ONLY=off ..
+sudo make install
+
+cd /home/pi/OpenSkyImager/build/gtk/
+./gtkImager
+
+
+To change the SBIG library, replace this file  /usr/lib/libsbigudrv.so
+To change the Atik library, replace this file  /usr/lib/libatikccd.so
+To change the QHY firmware, replace the firmware in /etc/qhyccd/ and edit /etc/udev/rules.d/85-qhy.rules
+
+
+
+20. QSI 
+
+20.1 LIBFTD2XX
+
+cd /home/pi/
+wget http://www.ftdichip.com/Drivers/D2XX/Linux/libftd2xx-arm-v7-hf-1.3.6.tgz
+tar xvf libftd2xx-arm-v7-hf-1.3.6.tgz
+cd /home/pi/release/build/
+cp libftd2xx.* /usr/lib
+chmod 0755 /usr/lib/libftd2xx.so.1.3.6
+ln -sf /usr/lib/libftd2xx.so.1.3.6 /usr/lib/libftd2xx.so
+
+cd ../examples/
+make -B
+cd EEPROM/read
+./read
+
+
+
+20.2 API
+
+sudo apt-get install gawk 
+
+cd /home/pi/
+wget http://www.qsimaging.com/downloads/qsiapi-7.2.0.tar.gz
+tar xvf qsiapi-7.2.0.tar.gz
+cd /home/pi/qsiapi-7.2.0/
+
+nano /home/pi/qsiapi-7.2.0/lib/CCDCamera.cpp
+****************** LINE 3241 ********************************
+int CCCDCamera::get_AntiBlooming(AntiBloom * pVal)
+{
+
+	if (!m_bIsConnected)
+		return Error ( "Not Connected", IID_ICamera, MAKE_HRESULT(1,FACILITY_ITF, QSI_NOTCONNECTED) );
+
+	// ADDED TO FIX BUG
+    if (!m_AdvEnabledOptions.AntiBlooming)
+        return Error ( "Option not available on this model", IID_ICamera, MAKE_HRESULT(1,FACILITY_ITF, QSI_NOTSUPPORTED) );
+    // END HERE
+		
+	QSI_Registry Registry;
+
+	// Attempt to get the advanced settings from registry and go to camera default on any setting that can't be retrieved
+	m_AdvSettings = Registry.GetAdvancedSetupSettings( m_USBSerialNumber, m_bIsMainCamera, m_AdvDefaultSettings );
+
+	*pVal = (AntiBloom)m_AdvSettings.AntiBloomingIndex;
+
+	return S_OK;
+}
+****************************************************************
+
+
+./configure --enable-libftd2xx --prefix=/usr
+sudo make all
+sudo make install
+cd /usr/lib
+ldconfig /usr/lib
+
+nano /etc/udev/rules.d/99-qsi.rules
+***************************************
+# 500-series
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0403", ATTR{idProduct}=="eb48", MODE="0666"
+# 600-series
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0403", ATTR{idProduct}=="eb49", MODE="0666"
+***************************************
+
+cd /home/pi/qsiapi-7.2.0/src/
+./qsiapitest
+
+
+
+21. GoQat
+
+sudo apt-get install libgtk-3-0 libgtk-3-dev grace
+
+cd /home/pi/
+wget https://launchpad.net/ubuntu/+archive/primary/+files/goocanvas-2.0_2.0.2.orig.tar.xz
+tar xvf goocanvas-2.0_2.0.2.orig.tar.xz
+cd goocanvas-2.0.2/
+./configure
+sudo make
+sudo make install
+sudo ldconfig
+
+
+################## EDIT GOQAT 2.1.0 ##################
+
+nano /home/pi/goqat-2.1.0/src/indi_client.cpp
+************************************
+    virtual void serverConnected ();
+    virtual void serverDisconnected (int exit_code);
+    virtual void newDevice (INDI::BaseDevice *dp);
+    virtual void removeDevice (INDI::BaseDevice *dp);
+    virtual void newProperty (INDI::Property *property);
+    virtual void removeProperty (INDI::Property *property);
+	
+
+************************************	
+void INDIClient::newDevice (INDI::BaseDevice *dp)
+{
+	/* Add a new device */
+	
+    client->setBLOBMode (B_ALSO, dp->getDeviceName(), NULL);
+    indi_new_device (dp->getDeviceName ());
+}
+
+void INDIClient::removeDevice (INDI::BaseDevice *dp)
+{
+	/* Remove a device */
+}
+
+void INDIClient::newProperty (INDI::Property *property)
+{	
+
+
+nano /home/pi/goqat-2.1.0/src/qsi.c
+************************************
+int qsi_get_state (struct ccd_state *state, int AllSettings, ...)
+{
+...
+				default:
+					strcpy (state->status, "Unknown ");
+					break;
+			}
+		} else
+			return TRUE;  //********** Was 'return FALSE'
+...
+		
+get_error:
+	pthread_mutex_unlock (&get_mutex);
+	return TRUE;  //********** Was 'return FALSE'
+}
+
+
+nano /home/pi/goqat-2.1.0/src/interface.c
+************************************
+void on_txtCCDExposure_activate (GtkEditable *editable, gpointer data)
+{
+	/* Start the exposure if the user presses the Return key in the
+	 * Exposure field.
+	 */
+	
+	// gtk_widget_activate (xml_get_widget (xml_app, "btnCCDStart"));
+}
+
+
+************************************
+void set_fits_data (struct cam_img *img, gboolean UseDateobs, 
+                    enum CamType camtype, gboolean QueryHardware)
+{
+...
+
+	if (QueryHardware) {
+	
+		/* Get RA and Dec from telescope controller.  This routine prints a
+		 * warning and sets the values to zero if the link is not open.
+		 */
+/*		
+		telescope_get_RA_Dec (menu.Precess, &img->fits.epoch, 
+						      img->fits.RA, img->fits.Dec, 
+							  &ignore1, &ignore2, &ignore3, &ignore4);
+*/		
+		/* No need to warn if focuser not open/available.  Just set values
+		 * silently to zero.
+		 */
+
+		if (focus_comms->user & PU_FOCUS) {
+			f.cmd = FC_VERSION;
+			focus_comms->focus (&f);
+			if (f.version >= 3.0)
+				f.cmd = FC_CUR_POS_GET | FC_TEMP_GET;
+			else
+				f.cmd = FC_CUR_POS_GET;
+			focus_comms->focus (&f);
+			if (!f.Error) {
+				img->fits.focus_pos = f.cur_pos;
+				if (f.version >= 3.0)
+					img->fits.focus_temp = f.temp;
+			    else
+					img->fits.focus_temp = 0.0;
+			}
+		} else {
+			img->fits.focus_pos = 0;
+			img->fits.focus_temp = 0.0;
+		}
+	} else {
+	//	sprintf (img->fits.RA, "00:00:00");
+	//	sprintf (img->fits.Dec, "+00:00:00");
+		img->fits.focus_pos = 0;
+		img->fits.focus_temp = 0.0;
+	}
+
+}
+
+
+************************************
+void check_focuser_temp (void)
+{
+	/* Query the focuser temperature and display on Focus tab.  Make focus
+	 * adjustments if the user has requested it.
+	 */
+
+	FILE * pFile;
+...
+
+
+		pFile = fopen ("/home/pi/www/FC_CUR_POS.txt","w");
+		fprintf (pFile, "%d\n", f.cur_pos);
+		fclose(pFile);
+		
+		pFile = fopen ("/home/pi/www/FC_TEMP.txt","w");
+		fprintf (pFile, "%.1f\n", f.temp);
+		fclose(pFile);
+		
+	} else
+		L_print ("{r}Error reading focuser temperature\n");
+}
+
+################################################
+
+cd /home/pi/goqat-2.1.0/
+./configure
+sudo make
+sudo make install
+
+
+
+
+
+
+
+
+
+
+
+22. TTS
+
+sudo amixer set PCM -- 400
+
+
+22.1 Install Festival 
+
+sudo apt-get install festival
+
+echo  "good morning"| festival --tts
+
+echo  "good morning" > speak
+festival --tts speak
+
+
+22.2 Voice file
+
+cd /home/pi/
+mkdir hts_tmp
+cd hts_tmp/
+wget -c http://hts.sp.nitech.ac.jp/archives/2.1/festvox_nitech_us_bdl_arctic_hts-2.1.tar.bz2
+tar xvf festvox_nitech_us_bdl_arctic_hts-2.1.tar.bz2
+
+sudo mkdir -p /usr/share/festival/voices/us
+sudo mv lib/voices/us/* /usr/share/festival/voices/us/
+sudo mv lib/hts.scm /usr/share/festival/hts.scm
+
+nano /usr/share/festival/voices/us/nitech_us_bdl_arctic_hts/festvox/nitech_us_bdl_arctic_hts.scm
+*******************************************
+(require 'hts)
+(require_module 'hts_engine)
+change to
+(require 'hts21compat)
+(require_module 'hts21_engine)
+*******************************************
+(Parameter.set 'Synth_Method 'HTS)
+change to
+(Parameter.set 'Synth_Method 'HTS21)
+*******************************************
+
+
+
+23. nano /etc/rc.local
+*******************************************************************************
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+# Print the IP address
+#_IP=$(hostname -I) || true
+#if [ "$_IP" ]; then
+#  printf "My IP address is %s\n" "$_IP"
+#fi
+
+sudo echo "0 " > /home/pi/www/hist_L.txt
+sudo echo "65535 " > /home/pi/www/hist_U.txt
+sudo echo " " > /home/pi/www/image.txt
+sudo echo " " > /home/pi/www/photo.txt
+
+file="/home/pi/www/status_app"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_app
+fi
+
+file="/home/pi/www/status_connect"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_connect
+fi
+
+file="/home/pi/www/status_skychart"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_skychart
+fi
+
+file="/home/pi/www/status_guiding"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_guiding
+fi
+
+file="/home/pi/www/status_capture"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_capture
+fi
+
+file="/home/pi/www/status_ccd"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_ccd
+fi
+
+file="/home/pi/www/status_focus"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_focus
+fi
+
+file="/home/pi/www/status_dslr"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_dslr
+fi
+
+file="/home/pi/www/status_loading"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_loading
+fi
+
+file="/home/pi/www/status_processing"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/status_processing
+fi
+
+file="/home/pi/www/prepare_ccd"
+if [ -f "$file" ]; then
+sudo rm /home/pi/www/prepare_ccd
+fi
+
+sudo /home/pi/www/./sound > /dev/null 2>&1 &
+
+sudo /home/pi/www/./monitor_camera > /dev/null 2>&1 &
+
+sudo /home/pi/www/./monitor_pty > /dev/null 2>&1 &
+
+perl /home/pi/www/event_monitor4.pl &
+
+Xvfb :1 -screen 0 800x600x16 -ac &
+Xvfb :2 -screen 0 800x600x16 -ac &
+Xvfb :3 -screen 0 960x720x16 -ac &
+
+# Setup Wifi AP mode
+sudo ifconfig wlan0 down
+sudo ifconfig wlan0 10.0.0.1 netmask 255.255.255.0 up
+sudo iwconfig wlan0 power off
+sudo service dnsmasq restart
+sudo hostapd -B /etc/hostapd/ap.conf & > /dev/null 2>&1
+
+# Pushover notification
+file1="/home/pi/www/notify_imaging"
+file2="/home/pi/www/notify_guiding"
+if [ -f "$file1" ] || [ -f "$file2" ]; then
+perl /home/pi/www/notify_IP.pl
+fi
+
+exit 0
+
+
+
+24. INDI
+
+24.1 INDI server (Compiled from source codes)
+REFERENCE: https://github.com/indilib/indi
+
+sudo apt-get install libgps-dev dcraw libnova-dev libcfitsio3-dev libusb-1.0-0-dev zlib1g-dev libgsl0-dev build-essential cmake git libjpeg-dev libcurl4-gnutls-dev libboost-regex-dev
+
+cd /home/pi/
+git clone https://github.com/indilib/indi.git
+cd indi
+
+
+nano /home/pi/indi/libindi/drivers/agent/agent_imager.cpp
+***************************************************
+IUFillText(&ImageNameT[0], "IMAGE_FOLDER", "Image folder", "/home/pi/www/images");
+IUFillText(&ImageNameT[1], "IMAGE_PREFIX", "Image prefix", "IMG");
+***************************************************
+
+
+mkdir -p build/libindi
+cd build/libindi
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Debug ../../libindi
+make
+sudo make install
+
+
+nano /home/pi/indi/3rdparty/indi-qsi/qsi_ccd.cpp
+*******************************************
+    IUFillSwitch(&GainS[0], "High", "High", ISS_OFF);
+    IUFillSwitch(&GainS[1], "Low", "Low", ISS_OFF);
+    IUFillSwitch(&GainS[2], "Auto", "Auto", ISS_ON);
+    IUFillSwitchVector(&GainSP, GainS, 3, getDeviceName(), "Gain", "Gain", OPTIONS_TAB, IP_RW, ISR_1OFMANY, 60, IPS_IDLE);
+
+    IUFillSwitch(&FanS[0], "Off", "Off", ISS_OFF);
+    IUFillSwitch(&FanS[1], "Quiet", "Quiet", ISS_OFF);
+    IUFillSwitch(&FanS[2], "Full", "Full", ISS_ON);
+    IUFillSwitchVector(&FanSP, FanS, 3, getDeviceName(), "Fan", "Fan", MAIN_CONTROL_TAB, IP_RW, ISR_1OFMANY, 60, IPS_IDLE);
+
+    IUFillSwitch(&ABS[0], "Normal", "Normal", ISS_ON);
+    IUFillSwitch(&ABS[1], "High", "High", ISS_OFF);
+    IUFillSwitchVector(&ABSP, ABS, 2, getDeviceName(), "AntiBlooming", "AntiBlooming", OPTIONS_TAB, IP_RW, ISR_1OFMANY, 60, IPS_IDLE);
+*******************************************
+
+***************************************************
+mv /usr/include/sbigudrv.h /home/pi/.
+cp /home/pi/indi/3rdparty/libsbig/sbigudrv.h /usr/include/.
+***************************************************
+
+cd /home/pi/indi/build/
+mkdir 3rdparty
+cd 3rdparty
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Debug ../../3rdparty
+make
+sudo make install
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Debug ../../3rdparty
+make
+sudo make install
+
+
+cd /home/pi/indi/3rdparty/indi-mi/
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Debug
+make
+sudo make install
+
+
+cd /home/pi/indi/3rdparty/
+wget http://download.cloudmakers.eu/atikccd-1.5-armhf.deb
+dpkg -i --force-overwrite atikccd-1.5-armhf.deb
+wget http://download.cloudmakers.eu/atikccdsdk-1.5-armhf.deb
+dpkg -i --force-overwrite atikccdsdk-1.5-armhf.deb
+
+
+########################## UNSTABLE (To be installed by users) ################################
+
+cd /home/pi/indi/3rdparty/libqhy/
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Debug
+make
+sudo make install
+
+cd /home/pi/indi/3rdparty/indi-qhy/
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Debug
+make
+sudo make install
+
+###############################################################################################
+
+
+24.2 INDI client (web interface)
+
+24.2.1 INDI web manager
+
+sudo apt-get install python-dev python-pip
+sudo pip install psutil
+sudo pip install bottle
+
+cd /home/pi/indi/
+git clone https://github.com/knro/indiwebmanager.git
+
+
+-------------------------- CHANGE TO DARK THEME ------------------------------
+cd /home/pi/indi/indiwebmanager/servermanager/views/css/
+curl -O http://bootswatch.com/cyborg/bootstrap.css
+curl -O http://bootswatch.com/cyborg/bootstrap.min.css
+
+nano /home/pi/indi/indiwebmanager/servermanager/views/css/bootstrap.css
+nano /home/pi/indi/indiwebmanager/servermanager/views/css/bootstrap.min.css
+********************************************
+Comment the first line to prevent accessing internet
+********************************************
+
+nano /home/pi/indi/indiwebmanager/servermanager/views/form.tpl
+********************************************
+<!--  <link rel="stylesheet" type="text/css" href="/static/css/schoolhouse.css">  -->
+********************************************
+------------------------------------------------------------------------------
+
+
+python /home/pi/indi/indiwebmanager/servermanager/drivermanager.py &
+
+
+24.2.2 pyindi-ws
+
+# install swig-indi-python
+apt-get install swig2.0 subversion
+cd /home/pi/indi/
+svn co -r 36 svn://svn.code.sf.net/p/pyindi-client/code/trunk/swig-indi/swig-indi-python/
+mkdir libindipython
+cd libindipython
+cmake ../swig-indi-python
+make
+sudo make install
+
+# install cherrypy version 3
+sudo apt-get install python-cherrypy3
+
+# install ws4py
+sudo mkdir /home/pi/indi/ws4py
+chown root.root /home/pi/indi/ws4py
+cd /home/pi/indi/ws4py
+git clone https://github.com/Lawouach/WebSocket-for-Python.git
+cd /home/pi/indi/ws4py/WebSocket-for-Python
+python setup.py install
+
+# install and run the websocket server
+cd /home/pi/indi/
+svn co svn://svn.code.sf.net/p/pyindi-client/code/trunk/pyindi-ws
+cd /home/pi/indi/pyindi-ws/
+python indi_simple_html_cherrypy_server.py --host 10.0.0.1 --port 8888
+
+
+nano /home/pi/indi/pyindi-ws/static/index_simple_html.html
+*********************************************************************
+<html>
+<title>INDI Control Panel</title>
+    <head>
+
+<body bgcolor="#000000" TEXT="#FF0000" LINK="#FF0000" VLINK="#FF0000">
+
+<textarea id='message' rows='10' style="width:100%; background-color:#000000; color:#FF0000"></textarea>
+*********************************************************************
+
+
+nano /home/pi/indi/pyindi-ws/static/indi_simple_html.html
+*********************************************************************
+          <!--<form action='#' id='serverform' method='get'>-->
+<!--      <fieldset> -->
+        <!--    <legend></legend>
+            <label for='server'>Server: </label><input type='text' id='server' size='15' list='knownindiservers'/>
+            <label for='port'>Port: </label><input type='number' id='port' max='65535' size='5' list='knownindiports'/> -->
+            <input style="visibility:hidden;" id='connect' type='button' value='Connect' />
+<!--      </fieldset> -->
+          <!--</form>-->
+*********************************************************************
+
+
+nano /home/pi/indi/pyindi-ws/static/js/indi_simple_html.js
+*********************************************************************
+	before.parent().on('click', '#connect', {context: this}, function(evt) { 
+	    var server = "localhost";
+	    var port =  "7624";
+*********************************************************************
+
+
+nano /home/pi/indi/pyindi-ws/static/js/indi_simple_html.js
+*********************************************************************
+            if (jsonmsg.type == 'setKey') {
+                this.key = jsonmsg.data;
+                result = 'MANAGER: Setting key to ' + this.key;
+
+                $('#connect').trigger("click");  // ADDED
+*********************************************************************
+
+
+nano /home/pi/indi/pyindi-ws.sh
+*********************************************************************
+while true
+do
+if ! pgrep -f "indi_simple_html_cherrypy_server" > /dev/null
+then
+    echo "************ Restarting ************"
+	cd /home/pi/indi/pyindi-ws/
+	python indi_simple_html_cherrypy_server.py --host 10.0.0.1 --port 8888 &
+fi
+sleep 4
+done
+*********************************************************************
+
+
+sh /home/pi/indi/pyindi-ws.sh &
+
+
+
+25. noVNC
+
+cd /home/pi/www/
+git clone https://github.com/kanaka/noVNC.git
+
+Xvfb :1 -screen 0 800x600x16 -ac &
+x11vnc -rfbport 5566 -forever -display :1 &
+*******************************************
+DISPLAY=:1 skychart --unique &
+**************** OR ***********************
+DISPLAY=:1 /home/pi/lin_guider_pack/lin_guider/./lin_guider -geometry 800x600+0+0 &
+*******************************************
+
+/home/pi/www/noVNC/utils/./launch.sh --vnc localhost:5566 --listen 5666 &
+
+http://192.168.1.18/noVNC/vnc.html?autoconnect=true&host=192.168.1.18&port=5666
+
+
+
+26. Kernel modules
+
+apt-get install ncurses-dev
+sudo wget https://raw.githubusercontent.com/notro/rpi-source/master/rpi-source -O /usr/bin/rpi-source && sudo chmod +x /usr/bin/rpi-source && /usr/bin/rpi-source -q --tag-update
+
+sudo modprobe configs
+rpi-source
+
+********* To compile fliusb.ko **************
+cd /home/pi/indi/3rdparty/fliusb/
+make
+sudo cp /home/pi/indi/3rdparty/fliusb/fliusb.ko /lib/modules/$(uname -r)/kernel/drivers
+sudo depmod
+*********************************************
+
+********** To make mobules ******************
+make menuconfig
+make modules
+*********************************************
+
+
+
+
+
+
+
+
+A1. Robomask (Yocto-servo and DFrobot DSS-M15 180deg servo motor)
+REFERENCE:
+https://www.yoctopuce.com/EN/products/usb-actuators/yocto-servo
+http://www.dfrobot.com/index.php?route=product/product&product_id=120#.VzadFfl97IU
+
+
+cd /home/pi/www/
+./VirtualHub
+******************************
+http://10.0.0.1:4444
+Assign Logical name: robomask
+******************************
+
+root@iAstroHub:~# /home/pi/www/./YServo -s robomask.servo1 set_positionAtPowerOn -1000
+OK: robomask.servo1.set_positionAtPowerOn = -1000.
+OK: robomask.robomask.saveToFlash executed.
+
+root@iAstroHub:~# /home/pi/www/./YServo -s robomask.servo1 set_range 200
+OK: robomask.servo1.set_range = 200.
+OK: robomask.robomask.saveToFlash executed.
+
+***** Close ***** 
+root@iAstroHub:~# /home/pi/www/./YServo robomask.servo1 move 1000 5000
+OK: robomask.servo1.move = 1000 5000.
+
+***** Open ***** 
+root@iAstroHub:~# /home/pi/www/./YServo robomask.servo1 move -1000 5000
+OK: robomask.servo1.move = -1000 5000.
+
+
+
+A2. libftdi for Flip-Flat and other devices
+REFERENCE: http://www.intra2net.com/en/developer/libftdi/index.php
+
+sudo apt-get install cmake
+wget http://www.intra2net.com/en/developer/libftdi/download/libftdi1-1.1.tar.bz2
+tar xvf libftdi1-1.1.tar.bz2
+cd libftdi1-1.1
+mkdir build
+cd build
+cmake  -DCMAKE_INSTALL_PREFIX="/usr" ../
+make
+sudo make install
+
+gcc open.c -o open -lftdi
+
+
+
+A3. Preparation
+
+1) delete images in /home/pi/www/images/ and /home/pi/www/tmp_images/ 
+2) delete guiding and alert logs 
+3) set Null and uncheck debug in Linguider 

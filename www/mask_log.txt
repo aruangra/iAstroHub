@@ -1,0 +1,393 @@
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Off
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Off
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Off
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Off
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Off
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Off
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Off
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Off
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Set Brightness
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Set Brightness
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Set Brightness
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Set Brightness
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Off
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Off
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Off
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Off
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+ERR: No online module named robomask.servo1
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: E0BC0FC5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: Set Brightness
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: Open
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: Close
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: Set Brightness
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: Off
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: Off
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: Off
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: Off
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: On
+ftdi_read_chipid: 0
+FTDI chipid: 681106D5
+Flip-Flat: Open
+Flip-Flat: Close
+Flip-Flat: Close
+Flip-Flat: Open
+Flip-Flat: Close
+Flip-Flat: Open
+Flip-Flat: Close
+Flip-Flat: Open
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
+Robomask: Close
+OK: robomask.servo1.move = 1000 5000.
+Robomask: Open
+OK: robomask.servo1.move = -1000 5000.
