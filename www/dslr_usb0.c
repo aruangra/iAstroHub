@@ -4,6 +4,16 @@
 #include <termios.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <errno.h>
+#include <string.h>
+
+int resetUSBSerial () {
+    system("rmmod ftdi_sio");
+    system("rmmod usbserial");
+    system("modprobe usbserial");
+    system("modprobe ftdi_sio");
+    return 0;
+}
 
 int main (){
 
@@ -52,11 +62,13 @@ int main (){
 	sleep(2);
 	
 	sercmd = TIOCM_RTS;
-	fd = open("/dev/ttyUSB0", O_RDONLY); // Open the serial port.
 	
 		i=1;
 		while (i<=n_frames) {
-
+			resetUSBSerial();
+			fd = open("/dev/ttyUSB0", O_RDONLY); // Open the serial port.
+			ioctl(fd, TIOCMBIC, &sercmd); // Set the RTS pin to HIGH.
+			
 			pt = fopen("/home/pi/www/photo.txt", "a"); // Open File
 			fprintf(pt,"Frame %d of %d started\n",i,n_frames);
 			fclose(pt); // Close File
@@ -65,8 +77,7 @@ int main (){
 			fprintf(pt,"Frame %d started\n",i);
 			fclose(pt); 
 			
-			
-			if(access("/home/pi/www/mlu",F_OK) == 0)
+			if(access("/home/pi/www/mlu",F_OK) == 0) // Mirror lock-up section
 			{
 				pt = fopen("/home/pi/www/status_mlu", "w"); // Open File
 				fprintf(pt,"");
@@ -81,7 +92,17 @@ int main (){
 			}			
 
 			
-			ioctl(fd, TIOCMBIS, &sercmd); // Set the RTS pin.
+			if (-1==ioctl(fd, TIOCMBIS, &sercmd)) // Set the RTS pin to LOW (start exposure).
+			{	
+				int e = errno;
+				pt = fopen("/home/pi/www/photo.txt", "a"); // Open File
+                		fprintf(pt,"Error ioctl failed %sn",strerror(e));
+                		fclose(pt); // Close File; 
+                		close(fd);
+                		resetUSBSerial();
+                		fd = open("/dev/ttyUSB0", O_RDONLY); // Open the serial port.
+                		ioctl(fd, TIOCMBIS, &sercmd); // Set the RTS pin to LOW (start exposure).
+            		}
 
 			for(k=1;k<=exposure;k++)
 			{
@@ -91,7 +112,17 @@ int main (){
                         	fclose(pt); // Close File
 			}
 
-			ioctl(fd, TIOCMBIC, &sercmd); // Reset the RTS pin.
+			if (-1==ioctl(fd, TIOCMBIC, &sercmd)) // Set the RTS pin to HIGH (end exposure).
+			{	
+				int e = errno;
+				pt = fopen("/home/pi/www/photo.txt", "a"); // Open File
+                		fprintf(pt,"Error ioctl failed %sn",strerror(e));
+                		fclose(pt); // Close File; 
+                		close(fd);
+                		resetUSBSerial();
+                		fd = open("/dev/ttyUSB0", O_RDONLY); // Open the serial port.
+                		ioctl(fd, TIOCMBIC, &sercmd); // Set the RTS pin to HIGH (end exposure).
+            		}
 
 			pt = fopen("/home/pi/www/photo.txt", "a"); // Open File
 			fprintf(pt,"Frame %d of %d completed\n",i,n_frames);
@@ -126,7 +157,7 @@ int main (){
 				fclose(pt); // Close File
 				system("sudo /home/pi/www/./remote_client 4");
 			}			
-			
+			close(fd);
 		}
 
 	pt = fopen("/home/pi/www/photo.txt", "a"); // Open File
@@ -139,7 +170,7 @@ int main (){
 	
 	system("rm /home/pi/www/status_dslr");
 	
-	close(fd);
+	return 0;
 
 }
 
