@@ -1057,8 +1057,10 @@ function refresh() {
 }
 
 function plot() {
-    $.plot(placeholder1, [data1], options);
-    $.plot(placeholder2, [data2], options);
+    	var scroll = document.body.scrollTop;
+	$.plot(placeholder1, [data1], options);
+	$.plot(placeholder2, [data2], options);
+	document.body.scrollTop = scroll;
 }
 
 function IsNumeric(input)
