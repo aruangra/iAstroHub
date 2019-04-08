@@ -1057,8 +1057,10 @@ function refresh() {
 }
 
 function plot() {
-    $.plot(placeholder1, [data1], options);
-    $.plot(placeholder2, [data2], options);
+	var scroll = document.body.scrollTop; // store current scroll position
+    	$.plot(placeholder1, [data1], options);
+    	$.plot(placeholder2, [data2], options);
+	document.body.scrollTop = scroll;  // restore scroll position: avoid jump to top of page in some browsers
 }
 
 function IsNumeric(input)
